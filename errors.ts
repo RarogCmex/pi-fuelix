@@ -167,7 +167,10 @@ export function extractGatewayMessage(body: string): string | undefined {
   }
 
   const firstLine = trimmed.split(/\r?\n/, 1)[0].trim();
-  return firstLine ? firstLine.slice(0, 300) : undefined;
+  // A body with no words at all (`[]`, `{`, punctuation) carries no message:
+  // pass it through untouched rather than replacing it with itself.
+  if (!firstLine || !/[a-z0-9]/i.test(firstLine)) return undefined;
+  return firstLine.slice(0, 300);
 }
 
 // --- body recovery (the dropped-body fix) ------------------------------------

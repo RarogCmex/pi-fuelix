@@ -36,13 +36,17 @@ export type GatewayApi = "openai-completions";
 
 /** Human-readable name for a gateway id. Cosmetic only; the id is the contract. */
 export function displayName(id: string): string {
-  const cleaned = id.replace(/[-_]+/g, " ").replace(/\s+/g, " ").trim();
-  const titled = cleaned.replace(/\b([a-z])/g, (m) => m.toUpperCase());
-  return titled
-    .replace(/\bGpt\b/g, "GPT")
-    .replace(/\bO(\d)/g, "o$1")
-    .replace(/\bIt\b/g, "IT")
-    .replace(/\bA(\d)B\b/g, "A$1B");
+  const TOKENS: Record<string, string> = { gpt: "GPT", oss: "OSS", a4b: "A4B", it: "IT", e: "E" };
+  return id
+    .split(/[-_]+/)
+    .filter(Boolean)
+    .map((token) => {
+      const mapped = TOKENS[token.toLowerCase()];
+      if (mapped) return mapped;
+      if (/^\d+b$/i.test(token)) return `${token.slice(0, -1)}B`;
+      return token[0].toUpperCase() + token.slice(1);
+    })
+    .join("-");
 }
 
 export interface CatalogEntry {
@@ -111,14 +115,34 @@ export const EXCLUDED_PATTERN =
   /(?:^|[-_/])(embedding|embed|whisper|tts|transcribe|dall-e|imagen|rerank|moderation|guard)(?:$|[-_/])|(?:^|[-_/])image(?:$|[-_/])|audio|sora|veo/i;
 
 /**
- * Output ceiling and window for every model whose caps were **not** measured.
- * Deliberately small: an early compaction is recoverable, an over-context
- * request is billed. `research/2026-09-26-live-verification.md` records how to
- * replace a floor with a measurement (and why the obvious probe is expensive).
+ * Window and output cap for every model whose limits were **not** measured.
+ *
+ * The window is deliberately small (32 768): an early compaction is recoverable,
+ * an over-context request is billed. The cap is deliberately *not* smaller than
+ * 16 384, and that number needs defending because the cap is not passive —
+ * pi-ai's `buildBaseOptions` (`api/simple-options.js:10`) defaults `maxTokens`
+ * to `model.maxTokens` and the adapter then puts it on the wire
+ * (`max_completion_tokens`), so this value caps **every** answer from an
+ * unmeasured model:
+ *
+ *  - 16 384 is pi's own default for a provider definition that declares no cap
+ *    (`core/provider-composer.js:94`), so it is the value pi would have used had
+ *    this plugin declared nothing;
+ *  - a lower value (the 4 096 used for a *different* gateway's catalog) silently
+ *    truncates long answers — pi then sees `finish_reason: length` and may spend
+ *    a compact-and-retry attempt (`isRecoverableLength`) on it;
+ *  - the failure mode of a value that is too *large* is a free pre-inference
+ *    rejection when the route validates the field (it does for `gpt-4o-mini`,
+ *    recon), not a silent charge — the charge tracks the tokens actually
+ *    generated, never the ceiling.
+ *
+ * Replacing a floor with a measurement is described in
+ * `research/2026-09-26-live-verification.md` ("How to measure a cap without
+ * buying it").
  */
 export const UNVERIFIED_FLOOR = {
   contextWindow: 32_768,
-  maxTokens: 4_096,
+  maxTokens: 16_384,
   provenance: "floor" as const,
 };
 
@@ -165,7 +189,7 @@ const MEASURED: Record<string, { contextWindow: number; maxTokens: number; sourc
 };
 
 const PRICE_NOTE =
-  "fuelix publishes no price list and reports no per-token cost; window/cap are an unverified conservative floor";
+  "fuelix publishes no price list and reports no per-token cost; window/cap are an unverified estimate (see catalog.ts UNVERIFIED_FLOOR)";
 
 /**
  * The 98 chat ids `GET /v1/models` lists, frozen from the recorded listing
