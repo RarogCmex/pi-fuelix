@@ -6,10 +6,20 @@
  */
 
 import assert from "node:assert/strict";
-import test, { describe } from "node:test";
+import test, { describe, beforeEach } from "node:test";
 import type { ExtensionAPI } from "@earendil-works/pi-coding-agent";
 import fuelixExtension from "../index.ts";
 import { OVERFLOW_MARKER } from "../errors.ts";
+
+/**
+ * Env coupling guard: the wiring must look the same whether or not the caller has
+ * exported FUELIX_* (the live path sources `secret.env`), so ambient provider
+ * variables are removed before every test here.
+ */
+beforeEach(() => {
+  delete process.env.FUELIX_API_KEY;
+  delete process.env.FUELIX_BASE_URL;
+});
 
 type Handler = (event: any, context?: any) => any;
 

@@ -8,7 +8,7 @@
  */
 
 import assert from "node:assert/strict";
-import test, { describe, afterEach } from "node:test";
+import test, { describe, afterEach, beforeEach } from "node:test";
 import { readFileSync } from "node:fs";
 import type { RefreshModelsContext } from "@earendil-works/pi-ai";
 import { CATALOG_BY_ID, UNVERIFIED_FLOOR } from "../catalog.ts";
@@ -17,8 +17,27 @@ import { DEFAULT_BASE_URL } from "../models.ts";
 
 const realFetch = globalThis.fetch;
 
+/**
+ * Env coupling guard: this suite must pass whether or not the caller has done
+ * `set -a; . ./secret.env` (the house way to run the live harness), so the
+ * ambient provider variables are removed for the duration and restored after.
+ */
+const AMBIENT = ["FUELIX_API_KEY", "FUELIX_BASE_URL"] as const;
+const savedEnv: Record<string, string | undefined> = {};
+
+beforeEach(() => {
+  for (const name of AMBIENT) {
+    savedEnv[name] = process.env[name];
+    delete process.env[name];
+  }
+});
+
 afterEach(() => {
   globalThis.fetch = realFetch;
+  for (const name of AMBIENT) {
+    if (savedEnv[name] === undefined) delete process.env[name];
+    else process.env[name] = savedEnv[name];
+  }
 });
 
 function makeContext(overrides: Partial<RefreshModelsContext> = {}): RefreshModelsContext {
@@ -32,7 +51,7 @@ function makeContext(overrides: Partial<RefreshModelsContext> = {}): RefreshMode
 
 const payload = (...ids: string[]) => ({
   object: "list",
-  data: ids.map((id) => ({ id, object: "model", created: 1790421394, owned_by: "6697d4bf" })),
+  data: ids.map((id) => ({ id, object: "model", created: 1790421394, owned_by: "account" })),
 });
 
 const recordedListing = JSON.parse(

@@ -138,7 +138,8 @@ never verified, and a wrong URL in an auth error is worse than none.
 ### The `maxTokensField` decision (one field, evidence per model)
 
 pi sends the cap as **one** of two fields per model
-(`model.compat.maxTokensField`, resolved in `pi-ai/dist/api/openai-completions.js:588`),
+(`model.compat.maxTokensField`, resolved in `getCompat` at
+`pi-ai/dist/api/openai-completions.js:1317` and consumed at `:588`),
 and the gateway's behaviour differs per model, so "which field" had to be measured
 rather than guessed. Method: a streaming request whose prompt asks for ~20 output
 tokens, with the field under test set to **8**, aborted client-side after 300
@@ -302,9 +303,13 @@ came back 4xx. Full tables: `research/2026-09-26-live-verification.md`.
 
 - `npm run typecheck` (`tsc -p tsconfig.json`) — clean.
 - `npm test` (`node --test`, with the `test/no-network.ts` preload that makes
-  `globalThis.fetch` throw) — **126 passing**. Includes the catalog-wide payload
-  matrix (98 ids × 6 thinking levels) and the negative-safety assertions against
-  pi's real `isContextOverflow` / `isRetryableAssistantError` / `getOverflowPatterns`.
+  `globalThis.fetch` throw) — **130 passing**, both with and without `secret.env`
+  sourced (the suite removes ambient `FUELIX_*` variables per test, so it cannot
+  quietly depend on the caller's environment). Includes the catalog-wide payload
+  matrix (98 ids × 6 thinking levels), the negative-safety assertions against pi's
+  real `isContextOverflow` / `isRetryableAssistantError` / `getOverflowPatterns`,
+  and a hygiene test that fails if a key-like string, the gateway account id or a
+  balance figure ever reaches the sources.
 - `npm run live` (`live/check.ts`, paced 3 s, retry on 429) — **A–G PASS**: the
   listing matches the frozen catalog (111 ids, none stale, no unknown overlay
   candidate); `max_completion_tokens` is honoured on `gpt-5.4`, `gpt-4o-mini` and
@@ -401,7 +406,8 @@ models.ts     catalog -> pi Model: compat flags, the maxTokensField decision, ze
 discovery.ts  additive /v1/models overlay (authenticated, never throws)
 errors.ts     body recovery, overflow tagging, readable rewrites
 live/check.ts paced A–G live harness (explicit; never part of npm test)
-test/*.ts     node --test suite (126 tests) + no-network preload
+test/*.ts     node --test suite (130 tests) + no-network preload + hygiene scan
 test/fixtures recorded live bodies (listing + error dialects) used by the tests
+              (the listing's `owned_by` account id is scrubbed; the ids are verbatim)
 research/     recon handoff, this build's live-verification note (raw/ is gitignored)
 ```

@@ -34,8 +34,8 @@ export const DEFAULT_BASE_URL = "https://api.fuelix.ai/v1";
  *
  * **Decision: one field, `max_completion_tokens`, for every model on this
  * gateway — with the per-model seam available if a model ever needs the other
- * one.** pi expresses the choice per model (`model.compat.maxTokensField`,
- * resolved in `openai-completions.js:588` from `getCompat`), but nothing
+ * one.** pi expresses the choice per model (`model.compat.maxTokensField` — resolved in
+ * `getCompat` at `pi-ai/dist/api/openai-completions.js:1317`, consumed at `:588`), but nothing
  * measured here needs a split, and the recon's own evidence points the same
  * way:
  *

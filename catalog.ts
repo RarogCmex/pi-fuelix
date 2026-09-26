@@ -193,9 +193,10 @@ const PRICE_NOTE =
 
 /**
  * The 98 chat ids `GET /v1/models` lists, frozen from the recorded listing
- * (`test/fixtures/models-listing.json`). `test/catalog.test.ts` asserts this
- * array plus `NON_CHAT_IDS` equals the fixture exactly, so a listing change is
- * caught by the offline suite instead of silently drifting.
+ * (`test/fixtures/models-listing.json`, whose `owned_by` account id is scrubbed —
+ * the ids are verbatim). `test/catalog.test.ts` asserts this array plus
+ * `NON_CHAT_IDS` equals the fixture exactly, so a listing change is caught by the
+ * offline suite instead of silently drifting.
  */
 export const LISTED_CHAT_IDS: readonly string[] = [
   "c-haiku-4-5", "clarke-1.0", "claude-3-5-haiku", "claude-3-5-haiku-20241022",
