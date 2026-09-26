@@ -1,0 +1,34 @@
+{
+  "name": "pi-fuelix",
+  "version": "0.1.0",
+  "description": "fuelix.ai gateway provider for pi — the 111-id LiteLLM catalog (Azure OpenAI + Vertex/Anthropic + Google + third-party routes), per-model maxTokensField, /login, an additive /v1/models overlay and an error layer for the gateway's RFC 7807 / {\"detail\"} / 403-entitlement shapes.",
+  "type": "module",
+  "keywords": [
+    "pi-package",
+    "pi",
+    "pi-coding-agent",
+    "fuelix",
+    "litellm",
+    "azure-openai",
+    "openai-compat"
+  ],
+  "pi": {
+    "extensions": [
+      "./index.ts"
+    ]
+  },
+  "peerDependencies": {
+    "@earendil-works/pi-coding-agent": "*"
+  },
+  "peerDependenciesMeta": {
+    "@earendil-works/pi-coding-agent": {
+      "optional": true
+    }
+  },
+  "scripts": {
+    "test": "node --test --import ./test/no-network.ts 'test/*.test.ts'",
+    "typecheck": "tsc -p tsconfig.json",
+    "check": "npm run typecheck && npm test",
+    "live": "node live/check.ts"
+  }
+}

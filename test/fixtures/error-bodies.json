@@ -1,0 +1,60 @@
+{
+  "note": "Verbatim response bodies recorded from https://api.fuelix.ai/v1 on 2026-09-26 (research/raw/probe-errors.mjs). Do not hand-edit: these are the fixtures the offline error-layer tests replay through pi-ai real adapter.",
+  "recorded": "2026-09-26",
+  "cases": {
+    "models-no-key": {
+      "request": "GET /models",
+      "status": 401,
+      "contentType": "application/json",
+      "body": "\n            {\n              \"type\": \"https://httpstatuses.com/401\",\n              \"title\": \"Unauthorized\",\n              \"detail\": [\"Invalid or missing API key\"],\n              \"status\": 401,\n              \"instance\": \"/v1/models\"\n            }\n        "
+    },
+    "models-bad-key": {
+      "request": "GET /models",
+      "status": 401,
+      "contentType": "application/json",
+      "body": "\n            {\n              \"type\": \"https://httpstatuses.com/401\",\n              \"title\": \"Unauthorized\",\n              \"detail\": [\"Invalid or missing API key\"],\n              \"status\": 401,\n              \"instance\": \"/v1/models\"\n            }\n        "
+    },
+    "chat-bad-key": {
+      "request": "POST /chat/completions",
+      "status": 401,
+      "contentType": "application/json",
+      "body": "\n            {\n              \"type\": \"https://httpstatuses.com/401\",\n              \"title\": \"Unauthorized\",\n              \"detail\": [\"Invalid or missing API key\"],\n              \"status\": 401,\n              \"instance\": \"/v1/chat/completions\"\n            }\n        "
+    },
+    "chat-empty-body": {
+      "request": "POST /chat/completions",
+      "status": 400,
+      "contentType": "application/json",
+      "body": "{\"detail\":\"Request body is missing\"}"
+    },
+    "chat-missing-messages": {
+      "request": "POST /chat/completions",
+      "status": 400,
+      "contentType": "application/json",
+      "body": "{\"error\":{\"message\":\"litellm.BadRequestError: AzureException BadRequestError - Invalid 'messages': empty array. Expected an array with minimum length 1, but got an empty array instead.\",\"type\":\"invalid_request_error\",\"param\":\"messages\",\"code\":\"empty_array\"}}"
+    },
+    "chat-unknown-model": {
+      "request": "POST /chat/completions",
+      "status": 403,
+      "contentType": "application/json",
+      "body": "{\"error\":{\"message\":\"Authorization failed for model 'fuelix-does-not-exist-xyz'. The model may be unavailable, retired, or not enabled for your organization. If your API key is valid, verify the model name is correct and currently supported.\",\"type\":\"basicllm.schemas.errors.ModelAuthorizationError\",\"param\":{\"model\":\"fuelix-does-not-exist-xyz\"},\"code\":403}}"
+    },
+    "legacy-completions-404": {
+      "request": "POST /completions",
+      "status": 404,
+      "contentType": "application/problem+json; charset=utf-8",
+      "body": "{\"title\":\"Not Found\",\"detail\":[\"Cannot POST /v1/completions\"],\"status\":404,\"instance\":\"/v1/completions\"}"
+    },
+    "unknown-route-404": {
+      "request": "POST /definitely-not-a-route",
+      "status": 404,
+      "contentType": "application/problem+json; charset=utf-8",
+      "body": "{\"title\":\"Not Found\",\"detail\":[\"Cannot POST /v1/definitely-not-a-route\"],\"status\":404,\"instance\":\"/v1/definitely-not-a-route\"}"
+    },
+    "responses-gpt-4o-mini-200": {
+      "request": "POST /responses",
+      "status": 200,
+      "contentType": "application/json",
+      "body": "{\"id\":\"resp_0b8f27067853235b006ab7a995805c8196a3f7266cfa2a8722\",\"created_at\":1790421397.0,\"metadata\":{},\"model\":\"gpt4o_mini_20240718-useast2\",\"object\":\"response\",\"output\":[{\"id\":\"msg_0b8f27067853235b006ab7a995e9fc8196b5d0bb5edd0c4e22\",\"content\":[{\"annotations\":[],\"text\":\"Hi there! How can I assist you today?\",\"type\":\"output_text\",\"logprobs\":[]}],\"role\":\"assistant\",\"status\":\"completed\",\"type\":\"message\"}],\"parallel_tool_calls\":true,\"temperature\":1.0,\"tool_choice\":\"auto\",\"tools\":[],\"top_p\":1.0,\"background\":false,\"completed_at\":1790421398.0,\"prompt_cache_retention\":\"in_memory\",\"reasoning\":{},\"service_tier\":\"default\",\"status\":\"completed\",\"text\":{\"format\":{\"type\":\"text\"},\"verbosity\":\"medium\"},\"top_logprobs\":0,\"truncation\":\"disabled\",\"usage\":{\"input_tokens\":8,\"input_tokens_details\":{\"cache_write_tokens\":0,\"cached_tokens\":0},\"output_tokens\":11,\"output_tokens_details\":{\"reasoning_tokens\":0},\"total_tokens\":19},\"content_filters\":[{\"blocked\":false,\"source_type\":\"prompt\",\"content_filter_raw\":[],\"content_filter_results\":{\"hate\":{\"filtered\":false,\"severity\":\"safe\"},\"sexual\":{\"filtered\":false,\"severity\":\"safe\"},\"violence\":{\"filtered\":false,\"severity\":\"safe\"},\"self_harm\":{\"filtered\":false,\"severity\":\"safe\"}},\"content_filter_offsets\":{\"start_offset\":0,\"end_offset\":132,\"check_offset\":0}},{\"blocked\":false,\"source_type\":\"completion\",\"content_filter_raw\":[],\"content_filter_results\":{\"hate\":{\"filtered\":false,\"severity\":\"safe\"},\"sexual\":{\"filtered\":false,\"severity\":\"safe\"},\"violence\":{\"filtered\":false,\"severity\":\"safe\"},\"self_harm\":{\"filtered\":false,\"severity\":\"safe\"}},\"content_filter_offsets\":{\"start_offset\":0,\"end_offset\":37,\"check_offset\":0}}],\"frequency_penalty\":0.0,\"presence_penalty\":0.0,\"store\":true,\"tool_usage\":{\"image_gen\":{\"input_tokens\":0,\"input_tokens_details\":{\"image_tokens\":0,\"text_tokens\":0},\"output_tokens\":0,\"output_tokens_details\":{\"image_tokens\":0,\"text_tokens\":0},\"total_tokens\":0},\"web_search\":{\"num_requests\":0}}}"
+    }
+  }
+}

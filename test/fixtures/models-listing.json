@@ -1,0 +1,671 @@
+{
+  "object": "list",
+  "data": [
+    {
+      "id": "claude-3-5-haiku",
+      "object": "model",
+      "created": 1790421394,
+      "owned_by": "6697d4bf-46bd-484d-9f99-98c836cd207b"
+    },
+    {
+      "id": "claude-sonnet-4",
+      "object": "model",
+      "created": 1790421394,
+      "owned_by": "6697d4bf-46bd-484d-9f99-98c836cd207b"
+    },
+    {
+      "id": "dall-e-3",
+      "object": "model",
+      "created": 1790421394,
+      "owned_by": "6697d4bf-46bd-484d-9f99-98c836cd207b"
+    },
+    {
+      "id": "gpt-4o",
+      "object": "model",
+      "created": 1790421394,
+      "owned_by": "6697d4bf-46bd-484d-9f99-98c836cd207b"
+    },
+    {
+      "id": "gpt-4o-2024-05-13",
+      "object": "model",
+      "created": 1790421394,
+      "owned_by": "6697d4bf-46bd-484d-9f99-98c836cd207b"
+    },
+    {
+      "id": "text-embedding-3-large",
+      "object": "model",
+      "created": 1790421394,
+      "owned_by": "6697d4bf-46bd-484d-9f99-98c836cd207b"
+    },
+    {
+      "id": "text-embedding-3-small",
+      "object": "model",
+      "created": 1790421394,
+      "owned_by": "6697d4bf-46bd-484d-9f99-98c836cd207b"
+    },
+    {
+      "id": "imagen-3",
+      "object": "model",
+      "created": 1790421394,
+      "owned_by": "6697d4bf-46bd-484d-9f99-98c836cd207b"
+    },
+    {
+      "id": "gpt-4o-mini",
+      "object": "model",
+      "created": 1790421394,
+      "owned_by": "6697d4bf-46bd-484d-9f99-98c836cd207b"
+    },
+    {
+      "id": "text-embedding-ada-002",
+      "object": "model",
+      "created": 1790421394,
+      "owned_by": "6697d4bf-46bd-484d-9f99-98c836cd207b"
+    },
+    {
+      "id": "gpt-4o-2024-05-13-content-filter",
+      "object": "model",
+      "created": 1790421394,
+      "owned_by": "6697d4bf-46bd-484d-9f99-98c836cd207b"
+    },
+    {
+      "id": "gpt-4o-mini-2024-07-18",
+      "object": "model",
+      "created": 1790421394,
+      "owned_by": "6697d4bf-46bd-484d-9f99-98c836cd207b"
+    },
+    {
+      "id": "gpt-4o-2024-08-06",
+      "object": "model",
+      "created": 1790421394,
+      "owned_by": "6697d4bf-46bd-484d-9f99-98c836cd207b"
+    },
+    {
+      "id": "mistral-large",
+      "object": "model",
+      "created": 1790421394,
+      "owned_by": "6697d4bf-46bd-484d-9f99-98c836cd207b"
+    },
+    {
+      "id": "imagen-3-fast",
+      "object": "model",
+      "created": 1790421394,
+      "owned_by": "6697d4bf-46bd-484d-9f99-98c836cd207b"
+    },
+    {
+      "id": "llama-3.2-90b",
+      "object": "model",
+      "created": 1790421394,
+      "owned_by": "6697d4bf-46bd-484d-9f99-98c836cd207b"
+    },
+    {
+      "id": "o3-mini",
+      "object": "model",
+      "created": 1790421394,
+      "owned_by": "6697d4bf-46bd-484d-9f99-98c836cd207b"
+    },
+    {
+      "id": "o4-mini",
+      "object": "model",
+      "created": 1790421394,
+      "owned_by": "6697d4bf-46bd-484d-9f99-98c836cd207b"
+    },
+    {
+      "id": "tts-1",
+      "object": "model",
+      "created": 1790421394,
+      "owned_by": "6697d4bf-46bd-484d-9f99-98c836cd207b"
+    },
+    {
+      "id": "tts-1-hd",
+      "object": "model",
+      "created": 1790421394,
+      "owned_by": "6697d4bf-46bd-484d-9f99-98c836cd207b"
+    },
+    {
+      "id": "whisper-1",
+      "object": "model",
+      "created": 1790421394,
+      "owned_by": "6697d4bf-46bd-484d-9f99-98c836cd207b"
+    },
+    {
+      "id": "gemini-2.5-pro",
+      "object": "model",
+      "created": 1790421394,
+      "owned_by": "6697d4bf-46bd-484d-9f99-98c836cd207b"
+    },
+    {
+      "id": "mistral-large-24.11",
+      "object": "model",
+      "created": 1790421394,
+      "owned_by": "6697d4bf-46bd-484d-9f99-98c836cd207b"
+    },
+    {
+      "id": "gemini-2.5-flash",
+      "object": "model",
+      "created": 1790421394,
+      "owned_by": "6697d4bf-46bd-484d-9f99-98c836cd207b"
+    },
+    {
+      "id": "claude-3-7-sonnet",
+      "object": "model",
+      "created": 1790421394,
+      "owned_by": "6697d4bf-46bd-484d-9f99-98c836cd207b"
+    },
+    {
+      "id": "cursor-c-3-7-sonnet",
+      "object": "model",
+      "created": 1790421394,
+      "owned_by": "6697d4bf-46bd-484d-9f99-98c836cd207b"
+    },
+    {
+      "id": "claude-3-7-sonnet-20250219",
+      "object": "model",
+      "created": 1790421394,
+      "owned_by": "6697d4bf-46bd-484d-9f99-98c836cd207b"
+    },
+    {
+      "id": "gpt-4.1",
+      "object": "model",
+      "created": 1790421394,
+      "owned_by": "6697d4bf-46bd-484d-9f99-98c836cd207b"
+    },
+    {
+      "id": "claude-4-sonnet",
+      "object": "model",
+      "created": 1790421394,
+      "owned_by": "6697d4bf-46bd-484d-9f99-98c836cd207b"
+    },
+    {
+      "id": "cursor-c-4-sonnet",
+      "object": "model",
+      "created": 1790421394,
+      "owned_by": "6697d4bf-46bd-484d-9f99-98c836cd207b"
+    },
+    {
+      "id": "gpt-5-2025-08-07",
+      "object": "model",
+      "created": 1790421394,
+      "owned_by": "6697d4bf-46bd-484d-9f99-98c836cd207b"
+    },
+    {
+      "id": "gpt-5-nano-2025-08-07",
+      "object": "model",
+      "created": 1790421394,
+      "owned_by": "6697d4bf-46bd-484d-9f99-98c836cd207b"
+    },
+    {
+      "id": "gpt-5-mini-2025-08-07",
+      "object": "model",
+      "created": 1790421394,
+      "owned_by": "6697d4bf-46bd-484d-9f99-98c836cd207b"
+    },
+    {
+      "id": "gpt-5-chat-2025-08-07",
+      "object": "model",
+      "created": 1790421394,
+      "owned_by": "6697d4bf-46bd-484d-9f99-98c836cd207b"
+    },
+    {
+      "id": "claude-3-5-haiku-20241022",
+      "object": "model",
+      "created": 1790421394,
+      "owned_by": "6697d4bf-46bd-484d-9f99-98c836cd207b"
+    },
+    {
+      "id": "claude-sonnet-4-20250514",
+      "object": "model",
+      "created": 1790421394,
+      "owned_by": "6697d4bf-46bd-484d-9f99-98c836cd207b"
+    },
+    {
+      "id": "gpt-5",
+      "object": "model",
+      "created": 1790421394,
+      "owned_by": "6697d4bf-46bd-484d-9f99-98c836cd207b"
+    },
+    {
+      "id": "gpt-5-chat",
+      "object": "model",
+      "created": 1790421394,
+      "owned_by": "6697d4bf-46bd-484d-9f99-98c836cd207b"
+    },
+    {
+      "id": "gpt-5-mini",
+      "object": "model",
+      "created": 1790421394,
+      "owned_by": "6697d4bf-46bd-484d-9f99-98c836cd207b"
+    },
+    {
+      "id": "gpt-5-nano",
+      "object": "model",
+      "created": 1790421394,
+      "owned_by": "6697d4bf-46bd-484d-9f99-98c836cd207b"
+    },
+    {
+      "id": "claude-sonnet-4-5",
+      "object": "model",
+      "created": 1790421394,
+      "owned_by": "6697d4bf-46bd-484d-9f99-98c836cd207b"
+    },
+    {
+      "id": "claude-sonnet-4-legacy",
+      "object": "model",
+      "created": 1790421394,
+      "owned_by": "6697d4bf-46bd-484d-9f99-98c836cd207b"
+    },
+    {
+      "id": "claude-sonnet-4-5-20250929",
+      "object": "model",
+      "created": 1790421394,
+      "owned_by": "6697d4bf-46bd-484d-9f99-98c836cd207b"
+    },
+    {
+      "id": "gemini-2.5-flash-lite",
+      "object": "model",
+      "created": 1790421394,
+      "owned_by": "6697d4bf-46bd-484d-9f99-98c836cd207b"
+    },
+    {
+      "id": "claude-haiku-4-5",
+      "object": "model",
+      "created": 1790421394,
+      "owned_by": "6697d4bf-46bd-484d-9f99-98c836cd207b"
+    },
+    {
+      "id": "claude-haiku-4-5-20251001",
+      "object": "model",
+      "created": 1790421394,
+      "owned_by": "6697d4bf-46bd-484d-9f99-98c836cd207b"
+    },
+    {
+      "id": "c-haiku-4-5",
+      "object": "model",
+      "created": 1790421394,
+      "owned_by": "6697d4bf-46bd-484d-9f99-98c836cd207b"
+    },
+    {
+      "id": "imagen-4",
+      "object": "model",
+      "created": 1790421394,
+      "owned_by": "6697d4bf-46bd-484d-9f99-98c836cd207b"
+    },
+    {
+      "id": "gpt-4o-transcribe-2025-03-20",
+      "object": "model",
+      "created": 1790421394,
+      "owned_by": "6697d4bf-46bd-484d-9f99-98c836cd207b"
+    },
+    {
+      "id": "gpt-4o-transcribe",
+      "object": "model",
+      "created": 1790421394,
+      "owned_by": "6697d4bf-46bd-484d-9f99-98c836cd207b"
+    },
+    {
+      "id": "gemini-3-pro-preview",
+      "object": "model",
+      "created": 1790421394,
+      "owned_by": "6697d4bf-46bd-484d-9f99-98c836cd207b"
+    },
+    {
+      "id": "gemini-3-pro",
+      "object": "model",
+      "created": 1790421394,
+      "owned_by": "6697d4bf-46bd-484d-9f99-98c836cd207b"
+    },
+    {
+      "id": "claude-sonnet-4-5-bedrock",
+      "object": "model",
+      "created": 1790421394,
+      "owned_by": "6697d4bf-46bd-484d-9f99-98c836cd207b"
+    },
+    {
+      "id": "gpt-5.2-2025-12-11",
+      "object": "model",
+      "created": 1790421394,
+      "owned_by": "6697d4bf-46bd-484d-9f99-98c836cd207b"
+    },
+    {
+      "id": "gpt-5.2-chat",
+      "object": "model",
+      "created": 1790421394,
+      "owned_by": "6697d4bf-46bd-484d-9f99-98c836cd207b"
+    },
+    {
+      "id": "gpt-5.2-chat-2025-12-11",
+      "object": "model",
+      "created": 1790421394,
+      "owned_by": "6697d4bf-46bd-484d-9f99-98c836cd207b"
+    },
+    {
+      "id": "gemini-3-flash",
+      "object": "model",
+      "created": 1790421394,
+      "owned_by": "6697d4bf-46bd-484d-9f99-98c836cd207b"
+    },
+    {
+      "id": "gemini-3-flash-preview",
+      "object": "model",
+      "created": 1790421394,
+      "owned_by": "6697d4bf-46bd-484d-9f99-98c836cd207b"
+    },
+    {
+      "id": "gpt-4.1-mini-canada",
+      "object": "model",
+      "created": 1790421394,
+      "owned_by": "6697d4bf-46bd-484d-9f99-98c836cd207b"
+    },
+    {
+      "id": "gpt-oss-20b",
+      "object": "model",
+      "created": 1790421394,
+      "owned_by": "6697d4bf-46bd-484d-9f99-98c836cd207b"
+    },
+    {
+      "id": "translategemma-27b",
+      "object": "model",
+      "created": 1790421394,
+      "owned_by": "6697d4bf-46bd-484d-9f99-98c836cd207b"
+    },
+    {
+      "id": "claude-sonnet-4-6",
+      "object": "model",
+      "created": 1790421394,
+      "owned_by": "6697d4bf-46bd-484d-9f99-98c836cd207b"
+    },
+    {
+      "id": "cursor-c-sonnet-4-6",
+      "object": "model",
+      "created": 1790421394,
+      "owned_by": "6697d4bf-46bd-484d-9f99-98c836cd207b"
+    },
+    {
+      "id": "gemini-3.1-pro",
+      "object": "model",
+      "created": 1790421394,
+      "owned_by": "6697d4bf-46bd-484d-9f99-98c836cd207b"
+    },
+    {
+      "id": "gemini-3.1-pro-preview",
+      "object": "model",
+      "created": 1790421394,
+      "owned_by": "6697d4bf-46bd-484d-9f99-98c836cd207b"
+    },
+    {
+      "id": "gpt-5.4",
+      "object": "model",
+      "created": 1790421394,
+      "owned_by": "6697d4bf-46bd-484d-9f99-98c836cd207b"
+    },
+    {
+      "id": "gpt-5.4-2026-03-05",
+      "object": "model",
+      "created": 1790421394,
+      "owned_by": "6697d4bf-46bd-484d-9f99-98c836cd207b"
+    },
+    {
+      "id": "gpt-5.3-codex",
+      "object": "model",
+      "created": 1790421394,
+      "owned_by": "6697d4bf-46bd-484d-9f99-98c836cd207b"
+    },
+    {
+      "id": "gpt-5.3-codex-2026-02-24",
+      "object": "model",
+      "created": 1790421394,
+      "owned_by": "6697d4bf-46bd-484d-9f99-98c836cd207b"
+    },
+    {
+      "id": "wasikan-llama-3-3-70b",
+      "object": "model",
+      "created": 1790421394,
+      "owned_by": "6697d4bf-46bd-484d-9f99-98c836cd207b"
+    },
+    {
+      "id": "mistral-large-24.02",
+      "object": "model",
+      "created": 1790421394,
+      "owned_by": "6697d4bf-46bd-484d-9f99-98c836cd207b"
+    },
+    {
+      "id": "mistral-small-3.2-24b",
+      "object": "model",
+      "created": 1790421394,
+      "owned_by": "6697d4bf-46bd-484d-9f99-98c836cd207b"
+    },
+    {
+      "id": "gemini-3.1-flash-image",
+      "object": "model",
+      "created": 1790421394,
+      "owned_by": "6697d4bf-46bd-484d-9f99-98c836cd207b"
+    },
+    {
+      "id": "wasikan-qwen-3-next-80b",
+      "object": "model",
+      "created": 1790421394,
+      "owned_by": "6697d4bf-46bd-484d-9f99-98c836cd207b"
+    },
+    {
+      "id": "gemini-3.1-flash-lite",
+      "object": "model",
+      "created": 1790421394,
+      "owned_by": "6697d4bf-46bd-484d-9f99-98c836cd207b"
+    },
+    {
+      "id": "gemini-3.1-flash-lite-preview",
+      "object": "model",
+      "created": 1790421394,
+      "owned_by": "6697d4bf-46bd-484d-9f99-98c836cd207b"
+    },
+    {
+      "id": "claude-haiku-4",
+      "object": "model",
+      "created": 1790421394,
+      "owned_by": "6697d4bf-46bd-484d-9f99-98c836cd207b"
+    },
+    {
+      "id": "gemma-4-31b-it",
+      "object": "model",
+      "created": 1790421394,
+      "owned_by": "6697d4bf-46bd-484d-9f99-98c836cd207b"
+    },
+    {
+      "id": "gemma-4-26b-a4b-it",
+      "object": "model",
+      "created": 1790421394,
+      "owned_by": "6697d4bf-46bd-484d-9f99-98c836cd207b"
+    },
+    {
+      "id": "gpt-5.4-nano",
+      "object": "model",
+      "created": 1790421394,
+      "owned_by": "6697d4bf-46bd-484d-9f99-98c836cd207b"
+    },
+    {
+      "id": "gpt-5.4-mini",
+      "object": "model",
+      "created": 1790421394,
+      "owned_by": "6697d4bf-46bd-484d-9f99-98c836cd207b"
+    },
+    {
+      "id": "gpt-4.1-mini",
+      "object": "model",
+      "created": 1790421394,
+      "owned_by": "6697d4bf-46bd-484d-9f99-98c836cd207b"
+    },
+    {
+      "id": "gemini-2.5-pro-ca",
+      "object": "model",
+      "created": 1790421394,
+      "owned_by": "6697d4bf-46bd-484d-9f99-98c836cd207b"
+    },
+    {
+      "id": "gemini-3.5-flash",
+      "object": "model",
+      "created": 1790421394,
+      "owned_by": "6697d4bf-46bd-484d-9f99-98c836cd207b"
+    },
+    {
+      "id": "gemma-4-saif",
+      "object": "model",
+      "created": 1790421394,
+      "owned_by": "6697d4bf-46bd-484d-9f99-98c836cd207b"
+    },
+    {
+      "id": "tycho-1.0",
+      "object": "model",
+      "created": 1790421394,
+      "owned_by": "6697d4bf-46bd-484d-9f99-98c836cd207b"
+    },
+    {
+      "id": "clarke-1.0",
+      "object": "model",
+      "created": 1790421394,
+      "owned_by": "6697d4bf-46bd-484d-9f99-98c836cd207b"
+    },
+    {
+      "id": "claude-sonnet-5",
+      "object": "model",
+      "created": 1790421394,
+      "owned_by": "6697d4bf-46bd-484d-9f99-98c836cd207b"
+    },
+    {
+      "id": "gpt-5.6-terra",
+      "object": "model",
+      "created": 1790421394,
+      "owned_by": "6697d4bf-46bd-484d-9f99-98c836cd207b"
+    },
+    {
+      "id": "gpt-5.6-luna",
+      "object": "model",
+      "created": 1790421394,
+      "owned_by": "6697d4bf-46bd-484d-9f99-98c836cd207b"
+    },
+    {
+      "id": "cursor-c-sonnet-5",
+      "object": "model",
+      "created": 1790421394,
+      "owned_by": "6697d4bf-46bd-484d-9f99-98c836cd207b"
+    },
+    {
+      "id": "gemini-3.5-flash-lite",
+      "object": "model",
+      "created": 1790421394,
+      "owned_by": "6697d4bf-46bd-484d-9f99-98c836cd207b"
+    },
+    {
+      "id": "gemini-3.6-flash",
+      "object": "model",
+      "created": 1790421394,
+      "owned_by": "6697d4bf-46bd-484d-9f99-98c836cd207b"
+    },
+    {
+      "id": "wasikan-v2-2",
+      "object": "model",
+      "created": 1790421394,
+      "owned_by": "6697d4bf-46bd-484d-9f99-98c836cd207b"
+    },
+    {
+      "id": "gemini-2.5-flash-ca",
+      "object": "model",
+      "created": 1790421394,
+      "owned_by": "6697d4bf-46bd-484d-9f99-98c836cd207b"
+    },
+    {
+      "id": "luminate-np-gpt-5.4-nano",
+      "object": "model",
+      "created": 1790421394,
+      "owned_by": "6697d4bf-46bd-484d-9f99-98c836cd207b"
+    },
+    {
+      "id": "gpt-4o-mini-ca-east",
+      "object": "model",
+      "created": 1790421394,
+      "owned_by": "6697d4bf-46bd-484d-9f99-98c836cd207b"
+    },
+    {
+      "id": "gemini-3.7-flash",
+      "object": "model",
+      "created": 1790421394,
+      "owned_by": "6697d4bf-46bd-484d-9f99-98c836cd207b"
+    },
+    {
+      "id": "claude-sonnet",
+      "object": "model",
+      "created": 1790421394,
+      "owned_by": "6697d4bf-46bd-484d-9f99-98c836cd207b"
+    },
+    {
+      "id": "claude-haiku",
+      "object": "model",
+      "created": 1790421394,
+      "owned_by": "6697d4bf-46bd-484d-9f99-98c836cd207b"
+    },
+    {
+      "id": "gemini-3.8-flash",
+      "object": "model",
+      "created": 1790421394,
+      "owned_by": "6697d4bf-46bd-484d-9f99-98c836cd207b"
+    },
+    {
+      "id": "claude-opus-5",
+      "object": "model",
+      "created": 1790421394,
+      "owned_by": "6697d4bf-46bd-484d-9f99-98c836cd207b"
+    },
+    {
+      "id": "claude-opus",
+      "object": "model",
+      "created": 1790421394,
+      "owned_by": "6697d4bf-46bd-484d-9f99-98c836cd207b"
+    },
+    {
+      "id": "gemma-4-saif-kidc",
+      "object": "model",
+      "created": 1790421394,
+      "owned_by": "6697d4bf-46bd-484d-9f99-98c836cd207b"
+    },
+    {
+      "id": "luminate-gemma-4-saif",
+      "object": "model",
+      "created": 1790421394,
+      "owned_by": "6697d4bf-46bd-484d-9f99-98c836cd207b"
+    },
+    {
+      "id": "claude-opus-5-5",
+      "object": "model",
+      "created": 1790421394,
+      "owned_by": "6697d4bf-46bd-484d-9f99-98c836cd207b"
+    },
+    {
+      "id": "gpt-6-luna",
+      "object": "model",
+      "created": 1790421394,
+      "owned_by": "6697d4bf-46bd-484d-9f99-98c836cd207b"
+    },
+    {
+      "id": "gpt-6-sol",
+      "object": "model",
+      "created": 1790421394,
+      "owned_by": "6697d4bf-46bd-484d-9f99-98c836cd207b"
+    },
+    {
+      "id": "claude-opus-4-8",
+      "object": "model",
+      "created": 1790421394,
+      "owned_by": "6697d4bf-46bd-484d-9f99-98c836cd207b"
+    },
+    {
+      "id": "claude-opus-5-0",
+      "object": "model",
+      "created": 1790421394,
+      "owned_by": "6697d4bf-46bd-484d-9f99-98c836cd207b"
+    },
+    {
+      "id": "deepseek-v4.1-flash",
+      "object": "model",
+      "created": 1790421394,
+      "owned_by": "6697d4bf-46bd-484d-9f99-98c836cd207b"
+    }
+  ]
+}
