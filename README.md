@@ -255,7 +255,12 @@ probes, both `npm run live` runs and the real `pi` runs (see § Cost log).
 - `POST /v1/responses` — **200** with a full Responses body for `gpt-4o-mini`
   (`gpt4o_mini_20240718-useast2`, 8 in / 11 out tokens), *measured by this build*
   on 2026-09-26; the recon had recorded `400 Unknown parameter: 'input'` and this
-  probe was expected to be a free rejection and was billed. Not registered: same
+  probe was expected to be a free rejection and was billed. **Independently
+  re-verified by the maintainer the same day**: `200`, `status: completed`,
+  `model: gpt4o_mini_20240718-useast2`, `usage: {input_tokens: 8, output_tokens: 10}`.
+  The recon's 400 was model-specific (`gpt-5.4`) and never generalised to the route;
+  a second maintainer probe with `max_output_tokens: 8` was rejected by the front's
+  validator (`Expected a value >= 16`), which is further evidence the route is real. Not registered: same
   reasoning as above, plus the notable consequence below.
   **Consequence:** `gpt-5.3-codex` and `gpt-5.3-codex-2026-02-24` answer **400
   `AzureException - The requested operation is unsupported.`** on the
