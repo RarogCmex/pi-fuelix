@@ -34,7 +34,9 @@ and the recon handoff this build started from in
 ## Install / use
 
 ```
-pi install /path/to/pi-fuelix      # or: pi -e /path/to/pi-fuelix/index.ts
+pi install git:github.com/RarogCmex/pi-fuelix@main
+# or a local checkout:  pi install /path/to/pi-fuelix
+# or one-shot:          pi -e /path/to/pi-fuelix/index.ts
 /login fuelix                       # validates the key with a free zero-inference probe
 pi --model fuelix/gpt-5.4 -p "hello"
 ```
