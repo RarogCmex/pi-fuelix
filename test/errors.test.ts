@@ -206,7 +206,8 @@ describe("recorded error bodies through pi's real adapter", () => {
       false,
     );
     // pi-ai's formatProviderError: `<status>: <json body>` when the SDK's message
-    // does not already contain the body (utils/error-body.js:111).
+    // does not already contain the body (`formatProviderError`, pi-ai's
+    // utils/error-body.js).
     assert.match(blob, /^403: \{"message":"Authorization failed for model 'fuelix-does-not-exist-xyz'\./);
     assert.match(blob, /basicllm\.schemas\.errors\.ModelAuthorizationError/);
 

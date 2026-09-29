@@ -61,9 +61,10 @@ export const DEFAULT_BASE_URL = "https://api.fuelix.ai/v1";
  * three-request probe that would settle any one of them.
  *
  * Note where this field is even sent: pi passes `maxTokens` only on the paths
- * that ask for a cap — compaction summarization
- * (`core/compaction/compaction.js:533`) and cache warming
- * (`core/cache-warmer.js:241`) — a normal agent request sends neither field.
+ * that ask for a cap — compaction summarization (`core/compaction/`) and cache
+ * warming (`core/cache-warmer.js`) — a normal agent request sends neither field.
+ * Modules are named rather than line offsets: pi is an optional peer pinned to
+ * `*`, so an offset rots on the next release while the module still resolves.
  */
 export const MAX_TOKENS_FIELD: NonNullable<OpenAICompletionsCompat["maxTokensField"]> =
   "max_completion_tokens";

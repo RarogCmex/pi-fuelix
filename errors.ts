@@ -14,10 +14,12 @@
  * The mechanism is the OpenAI SDK's, not the gateway's: `APIError.makeMessage`
  * composes `<status> <error.message>` from the body's `error` key only, and for
  * a JSON body it passes `message = undefined` — so a body without an `error`
- * envelope becomes literally "no body" (`openai@6.40.0 core/error.js:25-38`).
+ * envelope becomes literally "no body" (the `openai` SDK's own error
+ * construction, in its `core/error.js` — `openai` is not a declared dependency of
+ * this package, it arrives with pi-ai).
  * pi-ai then composes `"<status>: <json body>"` when the SDK's error object does
- * carry a body that its message does not include
- * (`pi-ai/dist/utils/error-body.js:111` `formatProviderError`). Both shapes are
+ * carry a body that its message does not include (`formatProviderError` in
+ * pi-ai's `utils/error-body.js`). Both shapes are
  * locked as separate regression tests, because they are different failures.
  *
  * `recoverErrorBody` is the standard dropped-body fix: re-emit a non-OK body as
@@ -38,7 +40,7 @@ import { PROVIDER_ID } from "./models.ts";
 /** Prefix marking a message this module already rewrote, so rewrites are idempotent. */
 const SENTINEL = "fuelix:";
 
-/** The marker pi-ai's generic overflow pattern recognises (`utils/overflow.js:57`). */
+/** The marker pi-ai's generic overflow pattern recognises (`utils/overflow.js`). */
 export const OVERFLOW_MARKER = "context_length_exceeded: ";
 
 /**
@@ -61,7 +63,7 @@ const UNSUPPORTED_OPERATION_RE = /the requested operation is unsupported/i;
 
 /**
  * Veto list for the overflow normalizer, taken from pi-ai's own
- * `NON_OVERFLOW_PATTERNS` (`utils/overflow.js:71-75`) plus the status prefix:
+ * `NON_OVERFLOW_PATTERNS` (`utils/overflow.js`) plus the status prefix:
  * a throttle must never be laundered into a compaction trigger.
  */
 const RATE_LIMIT_RE = /\brate.?limit\b|too many requests|throttl|\b429\b/i;

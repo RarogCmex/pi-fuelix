@@ -342,7 +342,8 @@ Re-running any of it yourself: see § Development.
 
 - `npm run typecheck` (`tsc -p tsconfig.json`) — clean.
 - `npm test` (`node --test`, with the `test/no-network.ts` preload that makes
-  `globalThis.fetch` throw) — **130 passing**, both with and without ambient
+  `globalThis.fetch` throw) — **130 passing** at the time of writing (run it
+  rather than trusting the count), both with and without ambient
   `FUELIX_*` variables in the environment (the suite removes them per test, so it
   cannot quietly depend on the caller's shell). Includes the catalog-wide payload
   matrix (98 ids × 6 thinking levels), the negative-safety assertions against pi's

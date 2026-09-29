@@ -123,13 +123,13 @@ export const EXCLUDED_PATTERN =
  * The window is deliberately small (32 768): an early compaction is recoverable,
  * an over-context request is billed. The cap is deliberately *not* smaller than
  * 16 384, and that number needs defending because the cap is not passive —
- * pi-ai's `buildBaseOptions` (`api/simple-options.js:10`) defaults `maxTokens`
+ * pi-ai's `buildBaseOptions` (in `api/simple-options.js`) defaults `maxTokens`
  * to `model.maxTokens` and the adapter then puts it on the wire
  * (`max_completion_tokens`), so this value caps **every** answer from an
  * unmeasured model:
  *
  *  - 16 384 is pi's own default for a provider definition that declares no cap
- *    (`core/provider-composer.js:94`), so it is the value pi would have used had
+ *    (in `core/provider-composer.js`), so it is the value pi would have used had
  *    this plugin declared nothing;
  *  - a lower value (4 096 is a plausible-looking floor, and other gateways do
  *    use it) silently truncates long answers — pi then sees `finish_reason: length`
@@ -143,6 +143,10 @@ export const EXCLUDED_PATTERN =
  * Replacing a floor with a measurement is described in
  * `research/2026-09-26-live-verification.md` ("How to measure a cap without
  * buying it").
+ *
+ * Citations in this file name pi's *symbols and modules*, not line offsets:
+ * pi-ai is an optional peer pinned to `*`, so an offset rots silently on the next
+ * release while `buildBaseOptions` still resolves.
  */
 export const UNVERIFIED_FLOOR = {
   contextWindow: 32_768,
