@@ -26,10 +26,8 @@ not read:
 Everything a claim rests on was probed against the live gateway on **2026-09-26**
 (pi 0.87.1, pi-ai 0.87.1) with the key in `secret.env`; raw probe scripts and
 ledgers are in gitignored `research/raw/`, findings in
-[`research/2026-09-26-live-verification.md`](research/2026-09-26-live-verification.md),
-and the recon handoff this build started from in
-`research/2026-09-26-recon-handoff.md`. Verbatim response bodies live in
-`test/fixtures/`.
+[`research/2026-09-26-live-verification.md`](research/2026-09-26-live-verification.md).
+Verbatim response bodies live in `test/fixtures/`.
 
 ## Install / use
 

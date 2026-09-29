@@ -6,8 +6,8 @@
  * assorted third-party deployments (`wasikan-*`, `luminate-*`, `tycho-*`, vLLM
  * for `clarke-1.0`). Provenance, in the order the numbers were bought:
  *
- *  - **Caps and windows for three models are measured** (the iteration-2 eval-4
- *    report, quoted in `research/2026-09-26-recon-handoff.md`). That measurement
+ *  - **Caps and windows for three models are measured** (a prior private
+ *    measurement, 2026-09-26; raw output not published). That measurement
  *    cost real money (two probes were *accepted* at 411k and 210k input tokens),
  *    which is why nothing in that set is re-probed here.
  *  - **Everything else in this file is a conservative floor, marked as such.**
@@ -147,8 +147,8 @@ export const UNVERIFIED_FLOOR = {
 };
 
 /**
- * The models whose caps were bought (iteration-2 eval-4 report, quoted in
- * `research/2026-09-26-recon-handoff.md`, never re-probed here). Dated aliases
+ * The models whose caps were bought (a prior private measurement, 2026-09-26;
+ * never re-probed here). Dated aliases
  * of a measured id share its numbers because the gateway serves them with the
  * *same* deployment — verified for two of them in this build: `gpt-4o-mini`
  * answered as `gpt-4o-mini-2024-07-18` and `gpt-5.4` as `gpt-5.4-2026-03-05`
@@ -159,7 +159,7 @@ const MEASURED: Record<string, { contextWindow: number; maxTokens: number; sourc
   "gpt-5.4": {
     contextWindow: 922_000, // deployment INPUT ADMISSION limit ("Input tokens exceed the configured limit of 922000 tokens")
     maxTokens: 128_000,
-    source: "eval-4 report 2026-09-26 (bought): cap 128000, input limit 922000; `max_tokens` is silently ignored",
+    source: "prior private measurement 2026-09-26 (bought): cap 128000, input limit 922000; `max_tokens` is silently ignored",
   },
   "gpt-5.4-2026-03-05": {
     contextWindow: 922_000,
@@ -169,7 +169,7 @@ const MEASURED: Record<string, { contextWindow: number; maxTokens: number; sourc
   "claude-sonnet-5": {
     contextWindow: 1_000_000,
     maxTokens: 128_000,
-    source: "eval-4 report 2026-09-26 (bought, Vertex route; `max_tokens` accepted numerically but not upper-validated)",
+    source: "prior private measurement 2026-09-26 (bought, Vertex route; `max_tokens` accepted numerically but not upper-validated)",
   },
   "cursor-c-sonnet-5": {
     contextWindow: 1_000_000,
@@ -179,7 +179,7 @@ const MEASURED: Record<string, { contextWindow: number; maxTokens: number; sourc
   "gpt-4o-mini": {
     contextWindow: 128_000,
     maxTokens: 16_384,
-    source: "eval-4 report 2026-09-26 (bought): cap 16384, window 128000, both fields validated",
+    source: "prior private measurement 2026-09-26 (bought): cap 16384, window 128000, both fields validated",
   },
   "gpt-4o-mini-2024-07-18": {
     contextWindow: 128_000,

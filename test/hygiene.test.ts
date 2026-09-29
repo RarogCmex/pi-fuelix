@@ -49,15 +49,22 @@ describe("no secrets in the sources or fixtures", () => {
     }
   });
 
-  test("the account identifier from the live listing is scrubbed", () => {
-    // Assembled from parts so this test's own source cannot trip the scan.
-    const accountId = ["6697d4bf", "46bd", "484d", "9f99", "98c836cd207b"].join("-");
+  test("no gateway account identifier (UUID-shaped) anywhere", () => {
+    // Asserted by SHAPE, not by value. Embedding the real id here in order to
+    // check for it publishes the very thing the check exists to keep out, and
+    // splitting it across array parts — as an earlier revision did, "so this
+    // test's own source cannot trip the scan" — only defeats a substring scan
+    // while leaving the value trivially reconstructable by any reader.
+    //
+    // A shape assertion needs no secret and is strictly stronger: it also
+    // catches a future account id, not just the one recorded in 2026-09.
+    const UUID_SHAPED = /[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/i;
     for (const file of files) {
       const text = readFileSync(file, "utf8");
       assert.equal(
-        text.includes(accountId),
-        false,
-        `${relative(ROOT, file)} contains the gateway account id`,
+        UUID_SHAPED.exec(text),
+        null,
+        `${relative(ROOT, file)} contains a UUID-shaped string (gateway account id?)`,
       );
     }
   });

@@ -1,9 +1,9 @@
 # fuelix.ai — what this build measured (2026-09-26)
 
-Companion to `2026-09-26-recon-handoff.md`. The handoff's **"Already measured"**
-table (caps and windows, ≈$1.15 of bought data) was **not re-probed**: those
-numbers are used verbatim in `catalog.ts` and labelled as bought. Everything below
-is new measurement, and every claim in the README traces to a row here.
+The caps and windows already measured in an earlier pass (≈$1.15 of bought data)
+were **not re-probed**: those numbers are used verbatim in `catalog.ts` and
+labelled as bought. Everything below is new measurement, and every claim in the
+README traces to a row here.
 
 Raw evidence (gitignored): `raw/probe-errors.mjs`, `raw/probe-fields.mjs`,
 `raw/probe-thinking.mjs`, `raw/probe-reasoning-forward.mjs`,
