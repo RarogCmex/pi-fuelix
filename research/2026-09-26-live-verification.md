@@ -41,11 +41,15 @@ through pi-ai's real adapter (`test/errors.test.ts`):
 | `POST /completions`, unknown route | 404 | `application/problem+json`: `{"title":"Not Found","detail":["Cannot POST /v1/completions"],…}` | `404 status code (no body)` | `404 Not Found: Cannot POST /v1/completions` |
 
 The mechanism is the SDK's, not the gateway's: the OpenAI SDK composes its message
-from the body's `error` key only, and for a JSON body it passes `message =
-undefined` (`openai@6.40.0 core/error.js:25-38`) — so an RFC 7807 or `{"detail"}`
-body becomes literally "no body". pi-ai then glues a *present* body to the status
-as `<status>: <json>` (`pi-ai/dist/utils/error-body.js:111`). Two dialects, two
+from the body's `error` key only, and for a JSON body it passes
+`message = undefined` — so an RFC 7807 or `{"detail"}` body becomes literally
+"no body". pi-ai then glues a *present* body to the status as `<status>: <json>`
+(`formatProviderError`, in pi-ai's `utils/error-body.js`). Two dialects, two
 different failures, both locked as separate tests.
+
+Offsets into pi-ai's compiled files are given as module + symbol rather than line
+numbers throughout this report: pi-ai is an unpinned optional peer, so an offset
+rots silently on the next release while the symbol still resolves.
 
 **No 429 was ever observed** on this gateway, so no 429 wording is invented.
 

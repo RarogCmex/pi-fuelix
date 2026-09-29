@@ -166,8 +166,9 @@ never verified, and a wrong URL in an auth error is worse than none.
 ### The `maxTokensField` decision (one field, evidence per model)
 
 pi sends the cap as **one** of two fields per model
-(`model.compat.maxTokensField`, resolved in `getCompat` at
-`pi-ai/dist/api/openai-completions.js:1317` and consumed at `:588`),
+(`model.compat.maxTokensField`, resolved by `getCompat` and consumed by the
+request builder, both in pi-ai's `api/openai-completions.js` — symbols, not line
+offsets, because pi-ai is an unpinned optional peer and an offset rots silently),
 and the gateway's behaviour differs per model, so "which field" had to be measured
 rather than guessed. Method: a streaming request whose prompt asks for ~20 output
 tokens, with the field under test set to **8**, aborted client-side after 300
@@ -188,7 +189,7 @@ so a future route that needs it is a one-line override.
 Two consequences of the measurement that are easy to miss:
 
 - **pi sends the catalog cap on every request.** pi-ai's `buildBaseOptions`
-  defaults `maxTokens` to `model.maxTokens` (`pi-ai/dist/api/simple-options.js:10`),
+  defaults `maxTokens` to `model.maxTokens` (in `api/simple-options.js`),
   which is why a real `pi -p` run put `max_completion_tokens: 128000` (gpt-5.4) /
   `16384` (gpt-4o-mini) on the wire — and why the 92 floored models are capped at
   16 384. `test/wire-format.test.ts` locks this.
