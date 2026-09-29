@@ -13,8 +13,8 @@ import { OVERFLOW_MARKER } from "../errors.ts";
 
 /**
  * Env coupling guard: the wiring must look the same whether or not the caller has
- * exported FUELIX_* (the live path sources `secret.env`), so ambient provider
- * variables are removed before every test here.
+ * exported FUELIX_* (as the live harness expects), so ambient provider variables
+ * are removed before every test here.
  */
 beforeEach(() => {
   delete process.env.FUELIX_API_KEY;
@@ -175,8 +175,8 @@ describe("turn_end", () => {
   });
 
   test("stays silent in print mode so `pi -p` still prints the error", () => {
-    // Pitfall P23: an entry appended after the errored assistant message makes
-    // `pi -p` print nothing at all.
+    // An entry appended after the errored assistant message makes `pi -p` print
+    // nothing at all, which is why index.ts gates the note on `ctx.hasUI`.
     const { pi, handlers } = fakePi();
     fuelixExtension(pi);
     assert.equal(

@@ -1,7 +1,7 @@
 /**
  * Error layer for the fuelix.ai gateway.
  *
- * **The gateway really does lose error bodies**, and this build measured exactly
+ * **The gateway really does lose error bodies**, and the 2026-09-26 pass measured exactly
  * which ones (fixtures: `test/fixtures/error-bodies.json`, logic:
  * `test/errors.test.ts` drives pi-ai's *real* adapter with them):
  *
@@ -25,7 +25,7 @@
  * things here — the genuinely lost bodies come back, and both dialects arrive as
  * one uniform `<status> <text>` that `clarifyFuelixError` can parse once.
  *
- * The rewrites are deliberately narrow: only shapes this build *measured* are
+ * The rewrites are deliberately narrow: only shapes that were *measured* are
  * rewritten (a 429 was never observed on this gateway, so no 429 wording is
  * invented), each is idempotent, and `test/errors.test.ts` proves against pi's
  * real classifiers that none of them becomes retryable and none of them — except
@@ -67,8 +67,8 @@ const UNSUPPORTED_OPERATION_RE = /the requested operation is unsupported/i;
 const RATE_LIMIT_RE = /\brate.?limit\b|too many requests|throttl|\b429\b/i;
 
 /**
- * The overflow wording this gateway discloses. Quoted from the recon handoff's
- * measured table: OpenAI on Azure rejects with
+ * The overflow wording this gateway discloses, quoted from the measured table in
+ * `research/2026-09-26-live-verification.md`: OpenAI on Azure rejects with
  * `Input tokens exceed the configured limit of 922000 tokens` — a *pre-inference*
  * rejection that discloses the deployment's input limit for free. No
  * `OVERFLOW_PATTERNS` entry matches it: pi knows
@@ -78,7 +78,9 @@ const RATE_LIMIT_RE = /\brate.?limit\b|too many requests|throttl|\b429\b/i;
  * `test/errors.test.ts` against `getOverflowPatterns()`).
  *
  * Not re-measured here on purpose: reproducing it needs a ~922 000-token body,
- * and L18/L35 in the pitfalls catalog is exactly the story of paying for that.
+ * and this gateway accepts bodies it ought to reject — so the probe would be
+ * billed, not refused. Prove limits from rejections; an accepted probe is a paid
+ * probe.
  */
 const OVERFLOW_RE = /tokens? exceed(?:s|ed)? the configured limit of [\d,]+ tokens?/i;
 

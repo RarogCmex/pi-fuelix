@@ -58,7 +58,7 @@ const fixtures = JSON.parse(
 
 const CASES = fixtures.cases;
 
-/** What the recon measured and this build re-recorded. */
+/** Bodies recorded live on 2026-09-26 and committed as fixtures. */
 const GOT = (name: keyof typeof CASES) => CASES[name].body.trim();
 
 function model(id = "gpt-4o-mini") {

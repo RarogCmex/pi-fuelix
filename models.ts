@@ -34,25 +34,28 @@ export const DEFAULT_BASE_URL = "https://api.fuelix.ai/v1";
  *
  * **Decision: one field, `max_completion_tokens`, for every model on this
  * gateway — with the per-model seam available if a model ever needs the other
- * one.** pi expresses the choice per model (`model.compat.maxTokensField` — resolved in
- * `getCompat` at `pi-ai/dist/api/openai-completions.js:1317`, consumed at `:588`), but nothing
- * measured here needs a split, and the recon's own evidence points the same
- * way:
+ * one.** pi expresses the choice per model (`model.compat.maxTokensField`,
+ * resolved by `getCompat` in pi-ai's `api/openai-completions.js` — line offsets
+ * omitted on purpose: pi-ai is an unpinned peer, so cite the symbol, not the
+ * line). Nothing measured here needs a split, and the 2026-09-26 evidence points
+ * the same way:
  *
  *  - `max_completion_tokens` was measured **honoured** (the answer was cut at
  *    the limit, `finish_reason: "length"`) on 11 distinct backends:
  *    `gpt-4o-mini`, `gpt-5.4`, `o4-mini`, `gemini-2.5-flash`,
  *    `deepseek-v4.1-flash`, `clarke-1.0`, `tycho-1.0`, `wasikan-v2-2`,
  *    `gemma-4-26b-a4b-it`, `gpt-oss-20b`, `mistral-large` (probe B, 2026-09-26;
- *    `research/raw/part-b-ledger.json`).
- *  - `gpt-5.4` **silently ignores `max_tokens`** (recon: 200 for
+ *    the raw ledger behind it is local-only, not published).
+ *  - `gpt-5.4` **silently ignores `max_tokens`** (measured 2026-09-26: 200 for
  *    `max_tokens: 99999999`, and `max_tokens: 8` produced 12 output tokens), so
  *    the legacy field would be the wrong global choice.
- *  - `gpt-4o-mini` *validates both* (recon) and `claude-sonnet-5` honours
- *    `max_completion_tokens` (recon).
+ *  - `gpt-4o-mini` *validates both* and `claude-sonnet-5` honours
+ *    `max_completion_tokens` (both measured 2026-09-26).
  *
  * So a single global field does **not** break any measured model. What remains
- * unverified is the ~85 ids nobody probed: the field could be ignored on a
+ * unverified is every id nobody probed — 98 listed minus the 23 distinct ids the
+ * 2026-09-26 pass touched (listed in
+ * `research/2026-09-26-live-verification.md` §3-§5): the field could be ignored on a
  * route that was never exercised (`llama-3.2-90b` answered 403, so it could not
  * be tested at all). § "What remains unverified" in the README records the
  * three-request probe that would settle any one of them.
@@ -73,11 +76,12 @@ export const MAX_TOKENS_FIELD: NonNullable<OpenAICompletionsCompat["maxTokensFie
  * — but that tells us nothing:
  *
  *  - `reasoning_effort: "low"` / `"none"` / `"bogus-enum-value"` all returned
- *    **200** on `gpt-5.4`, `gemini-2.5-flash`, `mistral-large`, `clarke-1.0`
- *    and `deepseek-v4.1-flash`, and `"none"` returned 200 on `gpt-4o-mini` — a
- *    model that cannot reason at all (probe C/E, 2026-09-26). The control shows
- *    acceptance is not a signal: the gateway does not validate the field per
- *    model.
+ *    **200** on seven backends — `gpt-5.4`, `gemini-2.5-flash`,
+ *    `mistral-large`, `clarke-1.0`, `deepseek-v4.1-flash`, `tycho-1.0` and
+ *    `claude-haiku-4-5` (probes C/E, 2026-09-26);
+ *  - and `"none"` also returned 200 on `gpt-4o-mini`, a model that cannot
+ *    reason at all. That control is the point: acceptance is not a signal, the
+ *    gateway does not validate the field per model.
  *  - The one place it *is* forwarded to a validating upstream is the o-series
  *    route: `o4-mini` + `reasoning_effort: "none"` → **400** `AzureException
  *    BadRequestError - Unsupported value: 'reasoning_effort' does not support
@@ -87,8 +91,10 @@ export const MAX_TOKENS_FIELD: NonNullable<OpenAICompletionsCompat["maxTokensFie
  *
  * Declaring `reasoning: true` would make pi *claim* control it cannot
  * demonstrate: a user picking `off`/`minimal` would silently keep paying for the
- * upstream's default reasoning — the silent-corruption class the pitfalls
- * catalog warns about (T5/T26). Declaring `false` claims nothing: pi sends no
+ * upstream's default reasoning, with nothing observable changing in the answer.
+ * A capability flag that makes pi promise what the gateway never confirmed is
+ * the failure mode this catalog avoids above all others. Declaring `false`
+ * claims nothing: pi sends no
  * reasoning parameter at all and the model runs at the gateway's default effort.
  * `research/2026-09-26-live-verification.md` records the paired-run measurement
  * that would justify turning it on.
@@ -115,8 +121,9 @@ export const CHAT_COMPAT: OpenAICompletionsCompat = {
   // so pi must not send `store` / `prompt_cache_retention` / `prompt_cache_key`.
   supportsStore: false,
   supportsLongCacheRetention: false,
-  // Strict JSON-schema tools are unproven here (pi 0.87 already defaults this
-  // false for unknown OpenAI-compatible hosts, #9816).
+  // Strict JSON-schema tools are unproven here. pi 0.87 already defaults this
+  // to false for an OpenAI-compatible host it does not recognise, so the
+  // explicit `false` is belt-and-braces rather than a behaviour change.
   supportsStrictMode: false,
   // Measured: the SSE stream ends with `finish_reason` and a usage chunk when
   // `stream_options.include_usage` is set (probe B read token usage from it).
@@ -153,7 +160,7 @@ export function buildModels(baseUrl: string): FuelixModel[] {
 }
 
 /**
- * Shape for an id this build has never seen — a future id surfaced by
+ * Shape for an id this catalog has never seen — a future id surfaced by
  * `GET /v1/models`. Same conservative floor as the rest of the catalog, zero
  * cost, and no reasoning claim: an unknown id's capabilities are unknowable
  * without probing, and overstating them is what makes pi send a request that

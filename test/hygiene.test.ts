@@ -1,8 +1,9 @@
 /**
  * Secret hygiene: the recorded fixtures and the sources must not carry a key, an
- * account identifier or a balance figure. Two of those leaked into this repo's
- * history in earlier builds (a real key in a README example, an account email),
- * which is why the rule is a test rather than a habit.
+ * account identifier or a balance figure. The rule is a test rather than a habit
+ * because all three are easy to paste in by accident — a key inside an example
+ * command, an account id inside a recorded `owned_by`, a balance inside a quoted
+ * 4xx body — and none of them breaks anything, so nothing else would catch them.
  *
  * `secret.env` and `research/raw/` are deliberately out of scope: the first is the
  * real key's home by design (and gitignored), the second holds raw probe output.
@@ -70,9 +71,10 @@ describe("no secrets in the sources or fixtures", () => {
   });
 
   test("no currency figure from a gateway body was copied into the repo", () => {
-    // The recon recorded that a 403 body leaks a balance; the task for this build
-    // forbids reproducing USD figures (the gateway publishes no prices), so no
-    // `＄`-prefixed amount may appear.
+    // This gateway's 403 body discloses the account balance in the clear, and it
+    // publishes no prices at all, so no currency figure belongs in this repo:
+    // no `＄`-prefixed amount (U+FF04 — the gateway answers in local typography)
+    // may appear anywhere in the scanned tree.
     for (const file of files) {
       const text = readFileSync(file, "utf8");
       assert.equal(/＄\s?\d/.test(text), false, `${relative(ROOT, file)} carries a balance figure`);

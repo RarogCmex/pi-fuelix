@@ -1,20 +1,31 @@
 # pi-fuelix
 
-A pi provider plugin for the **fuelix.ai** gateway (`https://api.fuelix.ai/v1`) —
-a LiteLLM proxy in front of Azure OpenAI (`gpt-*`), Vertex/Anthropic
-(`claude-*`, `msg_vrtx_…` ids), Google (`gemini-*`) and assorted deployments
-(`wasikan-*`, `luminate-*`, `clarke-1.0` on vLLM, …). It registers the `fuelix`
-provider with the gateway's 98 chat ids, `/login`, a live `/v1/models` overlay and
-an error layer for the gateway's particular failure dialects.
+A provider plugin for [pi](https://github.com/earendil-works/pi)
+(`@earendil-works/pi-coding-agent`, the coding agent this plugs into) targeting the
+**fuelix.ai** gateway (`https://api.fuelix.ai/v1`) — a LiteLLM proxy in front of
+Azure OpenAI (`gpt-*`), Vertex/Anthropic (`claude-*`, `msg_vrtx_…` ids), Google
+(`gemini-*`) and assorted deployments (`wasikan-*`, `luminate-*`, `clarke-1.0` on
+vLLM, …). npm name: `@rarogcmex/pi-fuelix`. It registers the `fuelix` provider
+with the gateway's **98 chat ids** (of 111 listed — the other 13 are image, audio
+and embedding models), `/login`, a live `/v1/models` overlay and an error layer
+for the gateway's particular failure dialects.
 
-Three measured facts dominate the design, and all three were bought or bounded,
-not read:
+Everything a claim rests on was probed against the live gateway on **2026-09-26**
+(pi 0.87.1, pi-ai 0.87.1); the measurement report is
+[`research/2026-09-26-live-verification.md`](research/2026-09-26-live-verification.md)
+and the verbatim response bodies are committed in `test/fixtures/`. The probe
+scripts and raw ledgers are local-only (`research/raw/`, gitignored) and are not
+published — wherever a claim rests on one, this README says so.
+
+Three measured facts dominate the design, and all three were **bought or bounded,
+not read**:
 
 1. **The gateway accepts what it should reject.** `max_tokens: 99999999` returns
-   200 with a normal completion, and illegal enum values are ignored — that is how
-   an earlier evaluation spent ≈$1.15 on two *accepted* probes. Everything in this
-   plugin is therefore derived from **rejections** (free) or tiny capped
-   generations, and the cap decision below exists because of it.
+   200 with a normal completion, and illegal enum values are ignored. An earlier
+   private measurement pass spent ≈$1.15 on two probes it had designed as free
+   rejections. Everything in this plugin is therefore derived from **rejections**
+   (free) or tiny capped generations, and the cap decision below exists because
+   of it.
 2. **Two error dialects lose their body entirely** (RFC 7807, `{"detail":…}`), and
    a third survives as a JSON blob glued to the status (`403: {"message":…}`).
    pi's classifier machinery depends on the text, so the plugin recovers and
@@ -23,21 +34,34 @@ not read:
    the two candidates differs by model — see § The `maxTokensField` decision,
    which is the technical centre of this plugin.
 
-Everything a claim rests on was probed against the live gateway on **2026-09-26**
-(pi 0.87.1, pi-ai 0.87.1) with the key in `secret.env`; raw probe scripts and
-ledgers are in gitignored `research/raw/`, findings in
-[`research/2026-09-26-live-verification.md`](research/2026-09-26-live-verification.md).
-Verbatim response bodies live in `test/fixtures/`.
-
 ## Install / use
 
 ```
 pi install git:github.com/RarogCmex/pi-fuelix@main
 # or a local checkout:  pi install /path/to/pi-fuelix
 # or one-shot:          pi -e /path/to/pi-fuelix/index.ts
-/login fuelix                       # validates the key with a free zero-inference probe
-pi --model fuelix/gpt-5.4 -p "hello"
 ```
+
+Then, **inside pi** (these are pi's own slash commands, not shell):
+
+```
+/login fuelix                       # validates the key with a free zero-inference probe
+```
+
+```bash
+pi --model fuelix/gpt-5.4 -p "hello"   # one-shot run
+pi --list-models fuelix                # the 98 registered ids
+```
+
+Model ids take the `<provider>/<model-id>` form, so the `fuelix/` prefix is part
+of every id: `fuelix/gpt-5.4`, `fuelix/claude-sonnet-5`. Thinking-level flags
+(`--thinking …`) are accepted by pi but have **no effect** here — see § Thinking.
+
+**Getting a key:** fuelix.ai is not self-serve from this repository's point of
+view — the key (`ak-…`) comes from your account's API keys page, which is what
+the `/login` prompt names. Nothing in this plugin can create one, and the
+gateway publishes no pricing page, so the balance and entitlements behind a key
+are invisible from the outside (§ What remains unverified).
 
 Environment:
 
@@ -45,7 +69,7 @@ Environment:
 |---|---|
 | `FUELIX_API_KEY` | Gateway key (`ak-…`). The credential stored by `/login` wins over it. |
 | `FUELIX_BASE_URL` | Endpoint override (default `https://api.fuelix.ai/v1`), trailing slashes stripped. |
-| `FUELIX_LIVE_SWEEP` | `1` makes `npm run live` run the opt-in liveness sweep (see § Cost log). |
+| `FUELIX_LIVE_SWEEP` | `1` makes `npm run live` also run check H, the opt-in liveness sweep (see § Development). |
 
 ## The catalog
 
@@ -53,7 +77,10 @@ Environment:
 **13 are not chat models** and **98 are**. The 98 are frozen in `catalog.ts`
 (`LISTED_CHAT_IDS`) and asserted against the recorded listing by
 `test/catalog.test.ts`, so a listing change fails a test instead of drifting
-silently. No count in this README is hand-maintained.
+silently. The counts this README states that the catalog depends on — 111 listed,
+98 chat, 13 excluded — are exactly the ones that test asserts; the rest (which
+ids were probed, which were not) are derived from
+`research/2026-09-26-live-verification.md` and are labelled as such.
 
 Everything in the listing is `{id, object, created, owned_by}` — **no windows, no
 caps, no prices, no modalities**. The gateway publishes no pricing page
@@ -61,9 +88,10 @@ caps, no prices, no modalities**. The gateway publishes no pricing page
 discloses a rate. Therefore:
 
 - **every price is zero, with a `priceNote`** — pi shows `$0.00` rather than a
-  plausible-looking wrong number (house rule: unknown ⇒ zero + note, never a
-  guess);
-- **measured caps** exist for the ids the recon bought (§ Provenance below);
+  plausible-looking wrong number. The rule the catalog follows is: an unknown
+  price is published as zero plus a note, never guessed;
+- **measured caps** exist for the six ids an earlier private pass bought (the
+  `provenance` column of the table below);
 - **everything else is a conservative floor**, `32 768` window / `16 384` cap,
   marked `provenance: "floor"` in the catalog. The window floor makes pi compact
   *before* an over-context request (which would be billed); the *cap* floor is
@@ -192,8 +220,10 @@ not offer it. Measured (2026-09-26):
 
 Declaring `reasoning: true` would make pi offer thinking levels whose effect is
 unproven, and a user choosing `off`/`minimal` could keep paying for the upstream's
-default reasoning — the silent-corruption class this repo's pitfalls catalog warns
-about. `reasoning: false` claims nothing: pi sends no reasoning parameter and every
+default reasoning with nothing observable changing in the answer — a capability
+flag promising something the gateway never confirmed, which is the one class of
+error this catalog refuses to ship. `reasoning: false` claims nothing: pi sends no
+reasoning parameter and every
 model runs at the gateway's default effort. A catalog-wide wire test asserts that
 for 98 ids × 6 levels. § What remains unverified says how to justify turning it on.
 
@@ -208,7 +238,8 @@ becomes readable for RFC 7807 / `{"detail"}` bodies, and which turns the envelop
 `message_end` then rewrites, in this order:
 
 1. **overflow first** — `Input tokens exceed the configured limit of N tokens`
-   (the deployment's input limit, quoted from the recon's bought measurement) is
+   (the deployment's input limit, quoted from the bought measurement of
+   2026-09-26) is
    tagged `context_length_exceeded: …`. pi's own `OVERFLOW_PATTERNS` provably do
    **not** match that wording (`test/errors.test.ts` checks every pattern), so
    without the rewrite pi would never auto-compact. A rate-limit veto runs first,
@@ -240,25 +271,27 @@ than worked around.
 Each state carries its own date and source, because they are not the same claim.
 
 **In use (this plugin, 2026-09-26):** `POST /v1/chat/completions`, keyed
-`openai-completions` in the api map. Every measurement this build made used it —
+`openai-completions` in the api map. Every measurement made on that date used it —
 the field matrix, the `reasoning_effort` probes, the liveness sweep, the error-path
-probes, both `npm run live` runs and the real `pi` runs (see § Cost log).
+probes, both `npm run live` runs and the real `pi` runs (§ What verifying this
+cost).
 
 **Exists, deliberately not added:**
 
 - `POST /v1/messages` — **200** with a real Anthropic-shaped body
-  (`msg_vrtx_…`), measured by the recon on `claude-sonnet-5` (2026-09-26). Not
+  (`msg_vrtx_…`) on `claude-sonnet-5`, measured 2026-09-26 by the earlier
+  reconnaissance pass. Not
   registered: the chat route serves the same models, `claude-*` ids are already in
   the catalog, and adding an `anthropic-messages` route means a second probe pass
   for tools/streaming/thinking before it can be trusted — a later increment, not a
   free win.
 - `POST /v1/responses` — **200** with a full Responses body for `gpt-4o-mini`
-  (`gpt4o_mini_20240718-useast2`, 8 in / 11 out tokens), *measured by this build*
-  on 2026-09-26; the recon had recorded `400 Unknown parameter: 'input'` and this
-  probe was expected to be a free rejection and was billed. **Independently
+  (`gpt4o_mini_20240718-useast2`, 8 in / 11 out tokens), measured 2026-09-26;
+  the earlier pass had recorded `400 Unknown parameter: 'input'`, and this probe
+  was designed as a free rejection and was billed instead. **Independently
   re-verified by the maintainer the same day**: `200`, `status: completed`,
   `model: gpt4o_mini_20240718-useast2`, `usage: {input_tokens: 8, output_tokens: 10}`.
-  The recon's 400 was model-specific (`gpt-5.4`) and never generalised to the route;
+  The earlier 400 was model-specific (`gpt-5.4`) and never generalised to the route;
   a second maintainer probe with `max_output_tokens: 8` was rejected by the front's
   validator (`Expected a value >= 16`), which is further evidence the route is real. Not registered: same
   reasoning as above, plus the notable consequence below.
@@ -300,22 +333,24 @@ register, `/login`, `--list-models`, `pi -p`, tools, and the error paths.
 
 ## What is verified live, and how
 
-All on **2026-09-26**, pi 0.87.1, key from `secret.env`. Cost discipline: every
+All on **2026-09-26**, pi 0.87.1, with a real gateway key. Cost discipline: every
 probe was either a **rejection** (free) or a tiny capped generation
 (`maxTokens ≤ 64` after the first matrix; `1` for the liveness sweep), and the
 free/billed split is *observed*, not intended — a probe counts as free only once it
 came back 4xx. Full tables: `research/2026-09-26-live-verification.md`.
+Re-running any of it yourself: see § Development.
 
 - `npm run typecheck` (`tsc -p tsconfig.json`) — clean.
 - `npm test` (`node --test`, with the `test/no-network.ts` preload that makes
-  `globalThis.fetch` throw) — **130 passing**, both with and without `secret.env`
-  sourced (the suite removes ambient `FUELIX_*` variables per test, so it cannot
-  quietly depend on the caller's environment). Includes the catalog-wide payload
+  `globalThis.fetch` throw) — **130 passing**, both with and without ambient
+  `FUELIX_*` variables in the environment (the suite removes them per test, so it
+  cannot quietly depend on the caller's shell). Includes the catalog-wide payload
   matrix (98 ids × 6 thinking levels), the negative-safety assertions against pi's
   real `isContextOverflow` / `isRetryableAssistantError` / `getOverflowPatterns`,
   and a hygiene test that fails if a key-like string, the gateway account id or a
   balance figure ever reaches the sources.
-- `npm run live` (`live/check.ts`, paced 3 s, retry on 429) — **A–G PASS**: the
+- `npm run live` (`live/check.ts`, paced 3 s, retry on 429) — **A–G PASS** (check
+  H, the opt-in sweep, was deliberately not run — see § Development): the
   listing matches the frozen catalog (111 ids, none stale, no unknown overlay
   candidate); `max_completion_tokens` is honoured on `gpt-5.4`, `gpt-4o-mini` and
   `o4-mini` (output cut at 8, `stopReason: length`, `max_tokens` absent); a
@@ -339,40 +374,37 @@ came back 4xx. Full tables: `research/2026-09-26-live-verification.md`.
     prints the unsupported-operation sentence. (Print mode is the mode the
     `turn_end`/`hasUI` trap breaks, so it is the one that must be checked.)
 
-## Cost log (tokens; the USD figure is unavailable)
+## What verifying this cost
 
-**No USD number appears in this repository, on purpose.** The gateway publishes no
+**No USD figure appears in this repository, on purpose.** The gateway publishes no
 price list, no body discloses a rate, and every catalog price is zero with a
 `priceNote`; the currency figure is simply unavailable. What can be measured is
-tokens and the free/billed split.
+tokens, and the free/billed split is *observed* rather than intended — a probe
+counts as free only once it came back 4xx.
 
-| activity | billed calls | input | output |
-|---|---|---|---|
-| probes A–F (error bodies, field matrix ×2, `reasoning_effort` acceptance, illegal values, effort sweep, liveness sweep) | 34 | 6 927 | 123 |
-| `npm run live` A–G, run 1 | 5 | 192 | 39 |
-| `npm run live` A–G, run 2 (final code) | 5 | 192 | 39 |
-| real `pi -p --mode json` (gpt-4o-mini / gpt-5.4 / claude-sonnet-5) | 3 | 131 + 2 873 + 47, plus 6 144 cacheRead | 7 |
-| real `pi -p` text runs (2 payload-dump runs + 1 tool run) | 3 | not captured (same shape; the tool run is larger: tool schema + tool result) | not captured |
-| `gpt-5.3-codex` follow-up probes | 0 (two 400s) | 0 | 0 |
-| `--list-models` (×3) and every error-path run (401/403/400) | 0 (rejections / no inference) | 0 | 0 |
+The whole 2026-09-26 pass bought ≈ **10.4k input + 6.1k cacheRead + ≈150 output
+tokens** across 45 billed calls. Two things about that number are worth carrying
+over, and the per-request ledger that produces it lives in
+`research/2026-09-26-live-verification.md` §7 rather than here:
 
-≈ **10.4k input + 6.1k cacheRead + ≈ 150 output tokens** were bought in total (cacheRead
-was only captured on the three `--mode json` runs; the two text-mode runs almost
-certainly repeat the ~3k-token shape, which is why the ledger says "not captured"
-rather than inventing a figure). The
-largest single line item is `wasikan-v2-2`'s 6 138 input tokens — a deployment that
-reports far more input than the request contained, not a deliberately expensive
-probe. The stage budget was "no excess, ≤ $0.05"; with no published price the token
-line above is the only honest accounting.
+- **Almost everything was learned for free.** The listing, every error body, the
+  entitlement and unsupported-operation rejections and the `--list-models` runs
+  were all 4xx or non-inference and cost nothing.
+- **The one large line item was not a deliberate probe.** `wasikan-v2-2` reported
+  **6 138 input tokens for a ~30-token body** — that deployment appears to inject
+  a large upstream prompt. It is 59 % of the pass's input tokens, and it is the
+  reason no full-catalog sweep was run: a blind sweep is not priceable from the
+  outside.
 
-One honest correction against this build's own ledger: the `POST /v1/responses`
-probe **was billed** (8 in / 11 out tokens) — it was designed after the recon's
-"`400`, unsupported" and expected to be free. It belongs in the ledger, and it is
-also the evidence that the recon's claim no longer holds (§ Surfaces).
+One correction the ledger carries against itself: the `POST /v1/responses` probe
+**was billed** (8 in / 11 out). It was designed from an earlier `400,
+unsupported` observation and expected to be a free rejection. It is also the
+evidence that the earlier claim no longer holds (§ Surfaces).
 
 ## What remains unverified
 
-- **Windows and output caps for 92 of the 98 ids.** They are floors. § "How to
+- **Windows and output caps for 92 of the 98 ids.** They are floors (only the six
+  `provenance: "measured"` ids carry bought numbers). § "How to
   measure a cap without buying it" (`research/2026-09-26-live-verification.md`)
   gives the safe recipe: fix the field first, then send a deliberately oversized
   `max_completion_tokens` **with a client-side abort guard**; a rejection discloses
@@ -387,14 +419,17 @@ also the evidence that the recon's claim no longer holds (§ Surfaces).
 - **Prices.** None published, no body discloses one; zero + `priceNote` is the
   honest state, and the cache reads the gateway *does* report (`cacheRead: 3072` on
   the Azure routes) are priced at zero like everything else.
-- **Liveness of the 86 ids never probed**, and the two `gpt-5.3-codex*` ids, which
+- **Liveness of the 75 chat ids the 2026-09-26 pass never touched** (98 listed
+  minus the 23 distinct ids named in §3–§5 of the research note), and the two
+  `gpt-5.3-codex*` ids, which
   are unusable through this plugin's only route.
 - **Vision/image input** for the models that surely support it upstream (see
   § Surfaces).
 - **Overflow → auto-compaction end-to-end.** The rewrite is unit-tested against
-  pi's real classifiers and the wording comes from the recon's measured body, but no
+  pi's real classifiers and the wording comes from the measured body of
+  2026-09-26, but no
   live session was driven over the (922 000-token) edge — reproducing it needs an
-  oversized body, which is exactly what this build refused to send.
+  oversized body, which is exactly the probe this plugin refuses to send.
 - **`pi install <path>`** specifically (as opposed to `-e`): the `pi.extensions`
   manifest is standard, but the install path was not exercised, to avoid mutating
   the global pi config.
@@ -410,9 +445,43 @@ catalog.ts    pure data: the frozen 98-id list, the 13 exclusions, measured caps
 models.ts     catalog -> pi Model: compat flags, the maxTokensField decision, zero cost
 discovery.ts  additive /v1/models overlay (authenticated, never throws)
 errors.ts     body recovery, overflow tagging, readable rewrites
-live/check.ts paced A–G live harness (explicit; never part of npm test)
+live/check.ts paced A–H live harness (A–G always; H opt-in; never part of npm test)
 test/*.ts     node --test suite (130 tests) + no-network preload + hygiene scan
 test/fixtures recorded live bodies (listing + error dialects) used by the tests
               (the listing's `owned_by` account id is scrubbed; the ids are verbatim)
-research/     recon handoff, this build's live-verification note (raw/ is gitignored)
+research/     the 2026-09-26 live-verification report (raw/ is gitignored)
+scripts/      link-pi.mjs — dev setup only, never loaded by pi
 ```
+
+## Development
+
+```bash
+node scripts/link-pi.mjs   # once: link pi's packages from your global install
+npm run check              # typecheck + the 130 offline tests
+npm run live               # A–G harness against the real gateway; spends money
+```
+
+**Prerequisites.** Node ≥ 22.18 — the tests and `live/check.ts` are `.ts` run
+directly (type stripping, and `node --test`'s `.ts` discovery, are unflagged from
+22.18), plus a pi install.
+
+pi's own packages are not dependencies of this plugin: at runtime pi's extension
+loader aliases the bare `@earendil-works/pi-ai` specifier to its own copy, so a
+plain `npm install` leaves nothing to typecheck against. `scripts/link-pi.mjs`
+links them from your global pi install — it probes the npm prefix, nvm, pnpm,
+`~/.local`, `/usr/local` and the directory the `pi` executable resolves to, and
+creates junctions on Windows. For a specific install:
+`PI_ROOT=/path/to/node_modules node scripts/link-pi.mjs`. Verified against
+pi 0.87.1 / pi-ai 0.87.1 / `@types/node` 22.19.19.
+
+`npm run live` needs a key and nothing else: it resolves `FUELIX_API_KEY` or the
+credential stored by `/login fuelix`. Checks A–G run every time; **check H** (a
+`maxTokens: 1` sweep across the whole catalog, to map entitlement and liveness) is
+behind `FUELIX_LIVE_SWEEP=1` and off by default, because at least one deployment
+reports thousands of input tokens for a tiny body — a blind sweep is not
+priceable from the outside.
+
+Behaviour is pinned to pi 0.87.1 internals (the `message_end` rewrite contract,
+`compat.maxTokensField`, `clampMaxTokensToContext`) while `peerDependencies` stays
+`"*"`; the tested version is stated here rather than narrowed in the manifest, so
+an older pi may load the plugin and silently degrade.

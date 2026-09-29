@@ -18,9 +18,10 @@ import { DEFAULT_BASE_URL } from "../models.ts";
 const realFetch = globalThis.fetch;
 
 /**
- * Env coupling guard: this suite must pass whether or not the caller has done
- * `set -a; . ./secret.env` (the house way to run the live harness), so the
- * ambient provider variables are removed for the duration and restored after.
+ * Env coupling guard: this suite must pass whether or not the caller has
+ * `FUELIX_*` exported (e.g. because they just ran the live harness in the same
+ * shell), so the ambient provider variables are removed for the duration and
+ * restored after.
  */
 const AMBIENT = ["FUELIX_API_KEY", "FUELIX_BASE_URL"] as const;
 const savedEnv: Record<string, string | undefined> = {};

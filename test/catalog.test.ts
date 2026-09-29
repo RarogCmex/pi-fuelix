@@ -17,7 +17,7 @@ import {
   displayName,
 } from "../catalog.ts";
 
-/** The recorded `GET /v1/models` body (2026-09-26, key from secret.env). */
+/** The recorded `GET /v1/models` body (2026-09-26, `owned_by` scrubbed). */
 const listing = JSON.parse(
   readFileSync(new URL("./fixtures/models-listing.json", import.meta.url), "utf8"),
 ) as { data: { id: string }[] };
@@ -41,9 +41,10 @@ describe("the frozen listing", () => {
     assert.equal(CATALOG_BY_ID.size, CATALOG.length);
   });
 
-  test("the correction to the handoff: 13 non-chat ids, not ~10", () => {
-    // The handoff said "~10 are non-chat"; the listing shows 13. The two extra
-    // are the audio transcribers, which must not reach a chat picker either.
+  test("13 of the 111 listed ids are non-chat, and all 13 are excluded", () => {
+    // An earlier estimate put the non-chat count at ~10; the recorded listing
+    // shows 13. The difference is the audio transcribers, which must not reach a
+    // chat picker either.
     for (const id of ["gpt-4o-transcribe", "gpt-4o-transcribe-2025-03-20"]) {
       assert.ok(NON_CHAT_IDS.includes(id), `${id} must be excluded`);
       assert.equal(CATALOG_BY_ID.has(id), false);
@@ -95,7 +96,7 @@ describe("every catalog entry", () => {
     }
   });
 
-  test("exactly the ids the recon bought carry measured numbers", () => {
+  test("exactly the ids whose caps were bought carry measured numbers", () => {
     const measured = entries.filter((entry) => entry.provenance === "measured").map((e) => e.id);
     assert.deepEqual(measured.sort(), [...MEASURED_IDS].sort());
     // The three bought measurements (plus their same-deployment aliases).

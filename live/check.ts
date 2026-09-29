@@ -1,7 +1,10 @@
 /**
  * Live checks against the real fuelix.ai gateway — the claims the offline suite
  * cannot verify (README § "What is verified live, and how"). Not part of
- * `npm test`: run explicitly with `npm run live` after `set -a; . ./secret.env`.
+ * `npm test`: run explicitly with `npm run live`.
+ *
+ * Needs a key and nothing else — `FUELIX_API_KEY` in the environment, or the
+ * credential stored by `/login fuelix`. No file is read.
  *
  * **Cost discipline.** Every request is either a *pre-inference rejection*
  * (401/403/400 — free, and the gateway is known to answer 200 for probes that

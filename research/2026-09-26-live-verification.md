@@ -1,23 +1,29 @@
-# fuelix.ai — what this build measured (2026-09-26)
+# fuelix.ai — live measurement report (2026-09-26)
 
-The caps and windows already measured in an earlier pass (≈$1.15 of bought data)
-were **not re-probed**: those numbers are used verbatim in `catalog.ts` and
-labelled as bought. Everything below is new measurement, and every claim in the
-README traces to a row here.
+What was measured against the real gateway on 2026-09-26, and what each
+measurement decided. Every price/window/cap claim in the README traces to a row
+here.
 
-Raw evidence (gitignored): `raw/probe-errors.mjs`, `raw/probe-fields.mjs`,
-`raw/probe-thinking.mjs`, `raw/probe-reasoning-forward.mjs`,
-`raw/probe-effort-none.mjs`, `raw/probe-liveness.mjs`, `raw/cap-probe.mjs`, plus
-`raw/part-*-ledger.json`. Committed evidence: `test/fixtures/` (verbatim bodies)
-and `test/*.test.ts` (the assertions).
+The caps and windows for the six ids in `catalog.ts` marked `provenance:
+"measured"` come from an **earlier private measurement pass** and were not
+re-probed on this date; they are labelled as bought wherever they are used.
 
-pi 0.87.1, pi-ai 0.87.1, openai SDK 6.40.0, key from `secret.env`.
+**Evidence you can open:** `test/fixtures/` holds the verbatim response bodies,
+and `test/*.test.ts` holds the assertions. The probe scripts and raw ledgers from
+both passes are local-only (`research/raw/`, gitignored) and are not published —
+where a claim rests on one, that is stated.
 
-## 1. Corrections to the handoff
+Environment: pi 0.87.1, pi-ai 0.87.1, openai SDK 6.40.0.
 
-| handoff claim | measurement | consequence |
+## 1. Corrections to the earlier pass
+
+An earlier reconnaissance pass (2026-09-26, not published) recorded three claims
+that this report overturns. They are kept here because two of them changed what
+the plugin ships.
+
+| earlier claim | measurement | consequence |
 |---|---|---|
-| `POST /v1/responses` → `400 Unknown parameter: 'input'` ("the Responses body shape is not supported") | **`200`** with a full Responses body for `gpt-4o-mini` (model served as `gpt4o_mini_20240718-useast2`, 8 in / 11 out tokens). **This probe was billed** — it was expected to be a free rejection. | `/v1/responses` moves from "checked and absent" to "exists, deliberately not added". Recorded as a correction, not as a contradiction of the handoff's date. |
+| `POST /v1/responses` → `400 Unknown parameter: 'input'` ("the Responses body shape is not supported") | **`200`** with a full Responses body for `gpt-4o-mini` (model served as `gpt4o_mini_20240718-useast2`, 8 in / 11 out tokens). **This probe was billed** — it was designed as a free rejection. | `/v1/responses` moves from "checked and absent" to "exists, deliberately not added". |
 | "~10 non-chat ids" | **13**: `dall-e-3`, `imagen-3`, `imagen-3-fast`, `imagen-4`, `gemini-3.1-flash-image`, `tts-1`, `tts-1-hd`, `whisper-1`, `text-embedding-3-small`, `text-embedding-3-large`, `text-embedding-ada-002` **+ `gpt-4o-transcribe`, `gpt-4o-transcribe-2025-03-20`** | 98 chat ids registered, 13 excluded by id and by regex. The two transcriptions would otherwise have landed in pi's chat picker. |
 | `403` for an unknown model id | reproduced, and **also for a *listed* id**: `llama-3.2-90b` → 403 `Authorization failed for model 'llama-3.2-90b'`. | The listing is an advertisement, not an entitlement list. Both 403s were free (rejections). |
 
@@ -67,7 +73,7 @@ under test set to **8**; a stream aborted client-side after 300 events.
 | `llama-3.2-90b` | both fields | 403 | – | not entitled → unmeasurable |
 
 **Decision: one global `max_completion_tokens`.** No measured model needed
-`max_tokens`; the handoff measured that `gpt-5.4` *silently ignores* `max_tokens`,
+`max_tokens`; the earlier pass measured that `gpt-5.4` *silently ignores* `max_tokens`,
 which is the one failure mode that would matter (an ignored cap looks like a
 working request). The choice is expressed per model
 (`model.compat.maxTokensField`) and the seam is exercised by
@@ -95,7 +101,8 @@ model that cannot reason, so **acceptance is not a signal**. Exactly one route
 (o-series) proved it forwards the field to a validating upstream. Nothing here
 shows that the field *changes* anything, and declaring `reasoning: true` would make
 pi offer levels that may silently do nothing while the user pays for the
-upstream's default reasoning (pitfalls T5/T26). **Decision: `reasoning: false` and
+upstream's default reasoning — a capability flag promising something the gateway
+never confirmed. **Decision: `reasoning: false` and
 `supportsReasoningEffort: false` for every model** — pi sends no reasoning
 parameter at all, which the catalog-wide wire test asserts for 98 ids × 6 levels.
 
@@ -128,10 +135,12 @@ it behind `FUELIX_LIVE_SWEEP=1` so it can be run deliberately, not by accident.
 
 ## 6. How to measure a cap without buying it
 
-The handoff's rule (L18/L35) is "prove limits from rejections". For this gateway
-that needs one precondition this build did establish: **the route must validate
-the field** — `gpt-5.4` accepted `max_tokens: 99999999` with a 200, which is how
-the original $1.15 was spent. A safe recipe, in order:
+The rule is **"prove limits from rejections"**: an oversized value that comes
+back 4xx disclosed the limit for free, and one that comes back 200 was bought.
+For this gateway the rule needs one precondition, established on 2026-09-26:
+**the route must validate the field at all** — `gpt-5.4` accepted
+`max_tokens: 99999999` with a 200, which is how the earlier pass spent ≈$1.15 on
+two probes it had designed as free. A safe recipe, in order:
 
 1. Fix the field first (§3): `max_completion_tokens` is honoured everywhere
    measured, `max_tokens` is not.
@@ -196,7 +205,7 @@ pi-ai parses natively — the catalog prices them at 0 like everything else.
 **Totals:** ≈ 10.4k input + 6.1k cacheRead (captured on the three `--mode json`
 runs only; the two text-mode runs are the same request shape but were not captured)
 + ≈ 150 output tokens across every
-billed call this build made, plus ~5 non-inference 2xx responses. The stage budget
-was "no excess, ≤ $0.05"; with no published price the only honest statement is the
-token total above — the single largest line item (6138 tokens) came from a
-*deployment that injects a prompt*, not from a deliberately expensive probe.
+billed call made on this date, plus ~5 non-inference 2xx responses. With no
+published price the only honest statement is the token total above — the single
+largest line item (6138 tokens) came from a *deployment that injects a prompt*,
+not from a deliberately expensive probe.

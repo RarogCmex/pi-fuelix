@@ -7,8 +7,9 @@
  *  1. has `globalThis.fetch` replaced with a throwing stub — a test that
  *     accidentally dials `api.fuelix.ai` fails loudly instead of billing the
  *     account, which makes "offline tests" a property of the suite rather than a
- *     claim about it. (The gateway answered 200 for probes the recon expected to
- *     be rejected, so an accidental call is a *paid* call — pitfalls L18/L35);
+ *     claim about it. (This gateway answered 200 for probes that were expected
+ *     to be rejected — measured 2026-09-26 — so an accidental call is a *paid*
+ *     call, not a free one);
  *  2. resolves the bare "@earendil-works/pi-ai" specifier to pi-ai's `compat`
  *     entrypoint, exactly as pi's extension loader does. Plain Node resolves it
  *     to `dist/index`, which does not export `openAICompletionsApi`, so without

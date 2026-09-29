@@ -37,7 +37,7 @@ export type KeyProbeResult = "valid" | "invalid" | "unknown";
 /**
  * Zero-inference key check: `POST /chat/completions` with an empty JSON body.
  *
- * Measured 2026-09-26 (`research/raw/errors-*.json`): an empty body is rejected
+ * Measured 2026-09-26 (the raw transcripts are local-only): an empty body is rejected
  * *before* inference with `400 {"detail":"Request body is missing"}` while an
  * invalid key is answered `401` RFC 7807. So 401 ⇒ bad key, anything else ⇒ the
  * key authenticated. A rejection is not billed, so this costs nothing — which is
@@ -137,8 +137,8 @@ export function fuelixApiKeyAuth(
  * baseline.
  *
  * Only the `openai-completions` surface is registered. `POST /v1/messages`
- * answers 200 (measured by the recon) and `POST /v1/responses` answers 200
- * (measured by this build) — both are deliberately left unregistered, with the
+ * answers 200 and `POST /v1/responses` answers 200 (both measured 2026-09-26) —
+ * they are deliberately left unregistered, with the
  * reasoning recorded in the README § Surfaces.
  */
 export function buildFuelixProvider(

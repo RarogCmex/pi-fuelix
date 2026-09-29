@@ -14,14 +14,17 @@
  *    The gateway publishes no per-model metadata and its listing carries none —
  *    `GET /v1/models` returns `{id, object, created, owned_by}` and nothing
  *    else (recorded verbatim in `test/fixtures/models-listing.json`). The floor
- *    is 32 768 / 4 096 so pi compacts *before* an over-context request is sent
- *    instead of after it is billed (pitfalls catalog L18).
+ *    is 32 768 / 16 384 (`UNVERIFIED_FLOOR` below) so pi compacts *before* an
+ *    over-context request is sent instead of after it is billed — an early
+ *    compaction is recoverable, an over-context request is not.
  *  - **No price exists anywhere.** `/pricing`, `/key/info`, `/spend/logs`,
- *    `/usage` are 404 and no body discloses a rate (recon). By house rule every
+ *    `/usage` are 404 and no body discloses a rate (probed 2026-09-26). The rule
+ *    this catalog follows is: an unknown price is published as zero plus a note,
+ *    never guessed. Every
  *    `cost` is therefore zero with a `priceNote` — a plausible-looking wrong
  *    number is worse than $0.00.
  *
- * What this build measured itself (2026-09-26, `research/2026-09-26-live-verification.md`)
+ * What was measured directly on 2026-09-26 (`research/2026-09-26-live-verification.md`)
  * is the *request field* behaviour, not the caps: `max_completion_tokens` is
  * honoured on 11 distinct backends, and `reasoning_effort` cannot be shown to
  * control anything — see `models.ts` for both decisions.
@@ -61,7 +64,7 @@ export interface CatalogEntry {
    * here rather than silently called a "context window".
    */
   contextWindow: number;
-  /** Output cap (`max_completion_tokens`). 4096 floor unless measured. */
+  /** Output cap (`max_completion_tokens`). `UNVERIFIED_FLOOR` unless measured. */
   maxTokens: number;
   /** pi input modalities. Only `text` is verified for every model (see README). */
   input: ("text" | "image")[];
@@ -128,13 +131,14 @@ export const EXCLUDED_PATTERN =
  *  - 16 384 is pi's own default for a provider definition that declares no cap
  *    (`core/provider-composer.js:94`), so it is the value pi would have used had
  *    this plugin declared nothing;
- *  - a lower value (the 4 096 used for a *different* gateway's catalog) silently
- *    truncates long answers — pi then sees `finish_reason: length` and may spend
+ *  - a lower value (4 096 is a plausible-looking floor, and other gateways do
+ *    use it) silently truncates long answers — pi then sees `finish_reason: length`
+ *    and may spend
  *    a compact-and-retry attempt (`isRecoverableLength`) on it;
  *  - the failure mode of a value that is too *large* is a free pre-inference
  *    rejection when the route validates the field (it does for `gpt-4o-mini`,
- *    recon), not a silent charge — the charge tracks the tokens actually
- *    generated, never the ceiling.
+ *    measured 2026-09-26), not a silent charge — the charge tracks the tokens
+ *    actually generated, never the ceiling.
  *
  * Replacing a floor with a measurement is described in
  * `research/2026-09-26-live-verification.md` ("How to measure a cap without
@@ -148,12 +152,13 @@ export const UNVERIFIED_FLOOR = {
 
 /**
  * The models whose caps were bought (a prior private measurement, 2026-09-26;
- * never re-probed here). Dated aliases
- * of a measured id share its numbers because the gateway serves them with the
- * *same* deployment — verified for two of them in this build: `gpt-4o-mini`
- * answered as `gpt-4o-mini-2024-07-18` and `gpt-5.4` as `gpt-5.4-2026-03-05`
- * (`research/raw/part-b-ledger.json`), and `cursor-c-sonnet-5` answered as
- * `claude-sonnet-5@default` (`research/raw/part-f-ledger.json`).
+ * never re-probed here, and the raw ledgers are not published). Dated aliases of
+ * a measured id share its numbers because the gateway serves them with the *same*
+ * deployment — verified for two of them on 2026-09-26: `gpt-4o-mini` answered as
+ * `gpt-4o-mini-2024-07-18` and `gpt-5.4` as `gpt-5.4-2026-03-05`, and
+ * `cursor-c-sonnet-5` answered as `claude-sonnet-5@default`. The `served_as`
+ * values quoted in the `source` strings below are the evidence; the transcripts
+ * they came from are local-only.
  */
 const MEASURED: Record<string, { contextWindow: number; maxTokens: number; source: string }> = {
   "gpt-5.4": {
