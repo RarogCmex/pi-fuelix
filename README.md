@@ -432,9 +432,13 @@ evidence that the earlier claim no longer holds (§ Surfaces).
   2026-09-26, but no
   live session was driven over the (922 000-token) edge — reproducing it needs an
   oversized body, which is exactly the probe this plugin refuses to send.
-- **`pi install <path>`** specifically (as opposed to `-e`): the `pi.extensions`
-  manifest is standard, but the install path was not exercised, to avoid mutating
-  the global pi config.
+- **`pi install` from the published source** (as opposed to `-e`) — exercised
+  2026-09-30 against `git:github.com/RarogCmex/pi-fuelix@main` with
+  `PI_CODING_AGENT_DIR` pointed at a throwaway directory, so no global pi config
+  was mutated: the package installed and `pi --list-models fuelix` listed all 98
+  catalog ids under a deliberately invalid key. The control run (same key, empty
+  config dir, no package) listed none. Still unchecked: a billed request on a
+  valid key.
 - **TUI rendering** of the persistent `fuelix-help` note: only the print-mode
   behaviour and the `ctx.hasUI` gate are tested.
 
@@ -474,7 +478,8 @@ links them from your global pi install — it probes the npm prefix, nvm, pnpm,
 `~/.local`, `/usr/local` and the directory the `pi` executable resolves to, and
 creates junctions on Windows. For a specific install:
 `PI_ROOT=/path/to/node_modules node scripts/link-pi.mjs`. Verified against
-pi 0.87.1 / pi-ai 0.87.1 / `@types/node` 22.19.19.
+pi 0.87.1 / pi-ai 0.87.1 / `@types/node` 22.19.19 (2026-09-26), and pi 0.99.1 /
+pi-ai 0.99.1 (2026-09-30) — the suite is green on both.
 
 `npm run live` needs a key and nothing else: it resolves `FUELIX_API_KEY` or the
 credential stored by `/login fuelix`. Checks A–G run every time; **check H** (a
@@ -483,7 +488,19 @@ behind `FUELIX_LIVE_SWEEP=1` and off by default, because at least one deployment
 reports thousands of input tokens for a tiny body — a blind sweep is not
 priceable from the outside.
 
-Behaviour is pinned to pi 0.87.1 internals (the `message_end` rewrite contract,
+Behaviour depends on pi internals (the `message_end` rewrite contract,
 `compat.maxTokensField`, `clampMaxTokensToContext`) while `peerDependencies` stays
-`"*"`; the tested version is stated here rather than narrowed in the manifest, so
-an older pi may load the plugin and silently degrade.
+`"*"` — pi's own packaging guidance is to declare host-provided packages with a
+`"*"` range, so the supported versions are stated here rather than narrowed in the
+manifest. Tested on pi 0.87.1 (2026-09-26/29) and pi 0.99.1 (2026-09-30, 130/130);
+a pi outside that set may load the plugin and silently degrade.
+
+The 0.99.1 pass caught exactly one such drift, worth knowing about as a pattern:
+the error-body tests had **pinned** the 0.87.1 adapter behaviour ("a body without
+an `error` envelope surfaces as `401 status code (no body)`"), which the `openai`
+7.19.0 bundled with pi-ai 0.99.1 no longer produces — it falls back to
+`JSON.stringify(error)`, so the body arrives. Nothing user-facing regressed (the
+auth rewrite fires on both shapes, and `withBodyRecovery`'s flattened output is
+byte-identical), but three tests went red on a pi upgrade. They now assert the
+invariant and treat the generation as measured input; see the `errors.ts` header
+for both measurements.
