@@ -8,9 +8,12 @@
  * both dialects are locked here as separate, verbatim cases:
  *
  *  - **without** `withBodyRecovery` — what pi sees when the gateway's body is
- *    not an OpenAI envelope (the SDK composes `"<status> status code (no body)"`)
- *    versus when it *is* one (the SDK stringifies the body and pi-ai glues it to
- *    the status);
+ *    not an OpenAI envelope. Generation-dependent, and therefore measured rather
+ *    than pinned: pi 0.87.1 surfaced the SDK's `"<status> status code (no body)"`,
+ *    pi 0.99.1 passes the body through (`401 {"type":…,"detail":[…]}`). Both are
+ *    in the wild because `peerDependencies` is `"*"`, so the raw-form assertions
+ *    accept either generation while the recovered form stays exact (byte-identical
+ *    on both);
  *  - **with** it — the same requests, with the body recovered as plain text.
  *
  * The third requirement is negative safety: every rewrite is checked against
@@ -148,18 +151,49 @@ function allRewrites(): { name: string; text: string }[] {
   return out;
 }
 
+/**
+ * The raw (pre-recovery) message for a body without an `error` envelope depends
+ * on the pi generation, and both generations are live because
+ * `peerDependencies` is `"*"`:
+ *
+ *   pi 0.87.1 → `401 status code (no body)`   (the SDK dropped the body)
+ *   pi 0.99.1 → `401 {"type":…,"title":"Unauthorized","detail":["Invalid or missing API key"],…}`
+ *
+ * 0.87.1 was measured on 2026-09-26 — that measurement is why
+ * `withBodyRecovery` exists at all. 0.99.1 was measured on 2026-09-30 by
+ * replaying all nine recorded fixtures through this same harness (pi-ai 0.99.1
+ * normalizes provider errors in `utils/error-body.js` and the bundled `openai`
+ * SDK now folds a body without an `error` key into `error.message`). What did
+ * **not** change is the flattened output of `withBodyRecoveryApi`: it is
+ * byte-identical on both generations, so the recovered assertions stay exact
+ * and only the raw-form premise became a disjunction.
+ */
+const LOSSY = (status: number) => `${status} status code (no body)`;
+
+/** The raw message either lost the body (older pi) or still carries `needle`. */
+function assertBodyReachable(raw: string, status: number, needle: string): void {
+  if (raw === LOSSY(status)) return; // older pi: recovery is what brings it back
+  assert.ok(
+    raw.includes(needle),
+    `raw message is neither the lossy form nor carries ${JSON.stringify(needle)}: ${raw}`,
+  );
+}
+
 describe("recorded error bodies through pi's real adapter", () => {
-  test("an RFC 7807 401 loses its body, and recovery brings it back", async () => {
+  test("an RFC 7807 401 reaches the user as an auth sentence, raw or recovered", async () => {
     const recorded = CASES["models-no-key"];
     assert.equal(recorded.status, 401);
 
-    const lost = await errorMessageFromRecordedBody(
+    const raw = await errorMessageFromRecordedBody(
       recorded.body,
       recorded.status,
       recorded.contentType,
       false,
     );
-    assert.equal(lost, "401 status code (no body)");
+    assertBodyReachable(raw, 401, "Invalid or missing API key");
+    // The user-facing invariant, true on both generations: whichever shape the
+    // adapter produced, the auth rewrite fires.
+    assert.ok(clarifyFuelixError(raw), `no auth rewrite for the raw form: ${raw}`);
 
     const recovered = await errorMessageFromRecordedBody(
       recorded.body,
@@ -168,27 +202,38 @@ describe("recorded error bodies through pi's real adapter", () => {
       true,
     );
     assert.equal(recovered, "401 Unauthorized: Invalid or missing API key");
+    assert.ok(clarifyFuelixError(recovered), "no auth rewrite for the recovered form");
   });
 
   test("the same 401 shape arrives for a bad key on the chat route", async () => {
     const recorded = CASES["chat-bad-key"];
-    assert.equal(
-      await errorMessageFromRecordedBody(recorded.body, recorded.status, recorded.contentType, false),
-      "401 status code (no body)",
+    const raw = await errorMessageFromRecordedBody(
+      recorded.body,
+      recorded.status,
+      recorded.contentType,
+      false,
     );
+    assertBodyReachable(raw, 401, "Invalid or missing API key");
+    assert.ok(clarifyFuelixError(raw), `no auth rewrite for the raw form: ${raw}`);
     assert.equal(
       await errorMessageFromRecordedBody(recorded.body, recorded.status, recorded.contentType, true),
       "401 Unauthorized: Invalid or missing API key",
     );
   });
 
-  test('a {"detail": …} 400 loses its body, and recovery brings it back', async () => {
+  test('a {"detail": …} 400 keeps the gateway\'s own words, raw or recovered', async () => {
     const recorded = CASES["chat-empty-body"];
     assert.equal(recorded.status, 400);
-    assert.equal(
-      await errorMessageFromRecordedBody(recorded.body, recorded.status, recorded.contentType, false),
-      "400 status code (no body)",
+    const raw = await errorMessageFromRecordedBody(
+      recorded.body,
+      recorded.status,
+      recorded.contentType,
+      false,
     );
+    assertBodyReachable(raw, 400, "Request body is missing");
+    // No clarify rewrite for this shape on either generation (measured): the
+    // flattened text already is the gateway's own sentence, and this layer only
+    // rewrites shapes that were measured to mislead.
     assert.equal(
       await errorMessageFromRecordedBody(recorded.body, recorded.status, recorded.contentType, true),
       "400 Request body is missing",

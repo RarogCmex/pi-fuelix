@@ -5,16 +5,28 @@
  * which ones (fixtures: `test/fixtures/error-bodies.json`, logic:
  * `test/errors.test.ts` drives pi-ai's *real* adapter with them):
  *
- * | response | pi sees without the fix | pi sees with it |
+ * | response | pi saw without the fix (0.87.1) | pi sees with it |
  * |---|---|---|
  * | 401 RFC 7807 `{"type","title","detail":[…]}` (no key / bad key) | `401 status code (no body)` | `401 Unauthorized: Invalid or missing API key` |
  * | 400 `{"detail":"Request body is missing"}` | `400 status code (no body)` | `400 Request body is missing` |
  * | 403 `{"error":{"message":"Authorization failed for model 'X'…"}}` | `403: {"message":"Authorization failed…"}` | `403 Authorization failed for model 'X'…` |
  *
- * The mechanism is the OpenAI SDK's, not the gateway's: `APIError.makeMessage`
- * composes `<status> <error.message>` from the body's `error` key only, and for
- * a JSON body it passes `message = undefined` — so a body without an `error`
- * envelope becomes literally "no body" (the `openai` SDK's own error
+ * **The middle column is generation-specific, and the newer generation does not
+ * lose those bodies.** Measured 2026-09-30 on pi 0.99.1 / pi-ai 0.99.1 by
+ * replaying all nine fixtures through the same harness: the two 401 shapes arrive
+ * as `401 {"type":…,"detail":["Invalid or missing API key"],…}` and the 400 as
+ * `400 {"detail":"Request body is missing"}`. The reason is in the bundled SDK,
+ * `openai` 7.19.0 `core/error.js:20-33` — `APIError.makeMessage` falls back to
+ * `JSON.stringify(error)` when the body carries no `error.message`, so
+ * `<status> status code (no body)` is now reached only when there is genuinely no
+ * body. The right column is unchanged: `withBodyRecovery` flattens to the same
+ * bytes on both generations, so on 0.99.1 it is a no-op rather than a rescue.
+ * It stays because `peerDependencies` is `"*"` and pi 0.87.x still loads this.
+ *
+ * The mechanism on 0.87.1 was the OpenAI SDK's, not the gateway's: `APIError.makeMessage`
+ * composed `<status> <error.message>` from the body's `error` key only, and for
+ * a JSON body it passed `message = undefined` — so a body without an `error`
+ * envelope became literally "no body" (the `openai` SDK's own error
  * construction, in its `core/error.js` — `openai` is not a declared dependency of
  * this package, it arrives with pi-ai).
  * pi-ai then composes `"<status>: <json body>"` when the SDK's error object does
@@ -281,8 +293,10 @@ export function clarifyFuelixError(errorMessage: string): string | undefined {
     );
   }
 
-  // status === 401 covers the dropped-body dialect: the SDK composes
-  // `401 status code (no body)` from the RFC 7807 body.
+  // status === 401 covers both dialects of a rejected key: the dropped-body one
+  // (`401 status code (no body)`, pi 0.87.1) and the raw RFC 7807 body that
+  // pi 0.99.1 passes through (`401 {"type":…,"detail":[…]}`). Measured
+  // 2026-09-30: both reach this branch and produce the same sentence.
   if (AUTH_RE.test(both) || status === 401) {
     return (
       `${SENTINEL} authentication failed (HTTP ${status ?? 401}) — the gateway rejected the key ` +
