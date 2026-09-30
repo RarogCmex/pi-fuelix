@@ -481,6 +481,11 @@ creates junctions on Windows. For a specific install:
 pi 0.87.1 / pi-ai 0.87.1 / `@types/node` 22.19.19 (2026-09-26), and pi 0.99.1 /
 pi-ai 0.99.1 (2026-09-30) — the suite is green on both.
 
+`npm run typecheck` shells out to a bare `tsc`, and this repo deliberately carries
+no devDependencies (`scripts/link-pi.mjs` links only pi's packages), so TypeScript
+must be on your `PATH`: `npm i -g typescript@5.9.3` — the version CI pins
+(`.github/workflows/check.yml`); 7.0.2 also typechecks clean (measured 2026-09-30).
+
 `npm run live` needs a key and nothing else: it resolves `FUELIX_API_KEY` or the
 credential stored by `/login fuelix`. Checks A–G run every time; **check H** (a
 `maxTokens: 1` sweep across the whole catalog, to map entitlement and liveness) is
