@@ -478,8 +478,10 @@ links them from your global pi install — it probes the npm prefix, nvm, pnpm,
 `~/.local`, `/usr/local` and the directory the `pi` executable resolves to, and
 creates junctions on Windows. For a specific install:
 `PI_ROOT=/path/to/node_modules node scripts/link-pi.mjs`. Verified against
-pi 0.87.1 / pi-ai 0.87.1 / `@types/node` 22.19.19 (2026-09-26), and pi 0.99.1 /
-pi-ai 0.99.1 (2026-09-30) — the suite is green on both.
+pi 0.87.1 / pi-ai 0.87.1 / `@types/node` 22.19.19 (2026-09-26), pi 0.99.1 /
+pi-ai 0.99.1 (2026-09-30), and pi 1.0.0 / pi-ai 1.0.0 (2026-10-03) — the suite is
+green on all three, and loading was checked on 1.0.0 separately:
+`pi -ne -e <repo> --offline --list-models fuelix` prints the same 98 models.
 
 `npm run typecheck` shells out to a bare `tsc`, and this repo deliberately carries
 no devDependencies (`scripts/link-pi.mjs` links only pi's packages), so TypeScript
@@ -497,8 +499,9 @@ Behaviour depends on pi internals (the `message_end` rewrite contract,
 `compat.maxTokensField`, `clampMaxTokensToContext`) while `peerDependencies` stays
 `"*"` — pi's own packaging guidance is to declare host-provided packages with a
 `"*"` range, so the supported versions are stated here rather than narrowed in the
-manifest. Tested on pi 0.87.1 (2026-09-26/29) and pi 0.99.1 (2026-09-30, 130/130);
-a pi outside that set may load the plugin and silently degrade.
+manifest. Tested on pi 0.87.1 (2026-09-26/29), pi 0.99.1 (2026-09-30, 130/130) and
+pi 1.0.0 (2026-10-03, 130/130); a pi outside that set may load the plugin and
+silently degrade.
 
 The 0.99.1 pass caught exactly one such drift, worth knowing about as a pattern:
 the error-body tests had **pinned** the 0.87.1 adapter behaviour ("a body without
