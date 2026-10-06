@@ -1,6 +1,6 @@
 {
   "name": "@rarogcmex/pi-fuelix",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "fuelix.ai gateway provider for pi — the 98-id chat catalog of a 111-id LiteLLM gateway (Azure OpenAI + Vertex/Anthropic + Google + third-party routes), per-model maxTokensField, /login, an additive /v1/models overlay and an error layer for the gateway's RFC 7807 / {\"detail\"} / 403-entitlement shapes.",
   "type": "module",
   "license": "MIT",
