@@ -10,8 +10,9 @@
  * *finalized* assistant message (overflow marker first, then the readable
  * sentence) before it is persisted — so the transcript, the next turn and the
  * display all agree — while `turn_end` appends one persistent TUI note for the two
- * failures a human must act on. On pi 1.0.0 (2026-10-03) the offline suite and the
- * provider load are green; the live rewrite was not re-probed there.
+ * failures a human must act on. On pi 1.4.0 (2026-10-22), as on 1.0.0 and 1.0.4,
+ * the offline suite and the provider load are green; the live rewrite has not been
+ * re-probed since 0.87.1.
  */
 
 // NOTE on this import: pi's extension loader aliases the bare

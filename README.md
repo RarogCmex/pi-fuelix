@@ -468,7 +468,7 @@ npm run live               # A–G harness against the real gateway; spends mone
 ```
 
 Prerequisites: **Node ≥ 22.19** — the floor comes from the host: pi's own
-`engines.node` is `>=22.19.0` (measured on both 0.87.0 and 1.0.0). Type
+`engines.node` is `>=22.19.0` (measured on 0.87.0, 1.0.0 and 1.4.0). Type
 stripping and `node --test`'s `.ts` discovery are unflagged from 22.18., plus a pi install.
 
 pi's own packages are not dependencies of this plugin: at runtime pi's extension
@@ -479,9 +479,9 @@ links them from your global pi install — it probes the npm prefix, nvm, pnpm,
 creates junctions on Windows. For a specific install:
 `PI_ROOT=/path/to/node_modules node scripts/link-pi.mjs`. Verified against
 pi 0.87.1 / pi-ai 0.87.1 / `@types/node` 22.19.19 (2026-09-26), pi 0.99.1 /
-pi-ai 0.99.1 (2026-09-30), pi 1.0.0 / pi-ai 1.0.0 (2026-10-03), and pi 1.0.4 /
-pi-ai 1.0.4 (2026-10-06) — the suite is
-green on all four, and loading was checked on 1.0.0 and 1.0.4 separately:
+pi-ai 0.99.1 (2026-09-30), pi 1.0.0 / pi-ai 1.0.0 (2026-10-03), pi 1.0.4 /
+pi-ai 1.0.4 (2026-10-06), and pi 1.4.0 / pi-ai 1.4.0 (2026-10-22) — the suite is
+green on all five, and loading was checked on 1.0.0, 1.0.4 and 1.4.0 separately:
 `pi -ne -e <repo> --offline --list-models fuelix` prints the same 98 models.
 
 `npm run typecheck` shells out to a bare `tsc`, and this repo deliberately carries
@@ -501,8 +501,9 @@ Behaviour depends on pi internals (the `message_end` rewrite contract,
 `"*"` — pi's own packaging guidance is to declare host-provided packages with a
 `"*"` range, so the supported versions are stated here rather than narrowed in the
 manifest. Tested on pi 0.87.1 (2026-09-26-29), pi 0.99.1 (2026-09-30, 130/130),
-pi 1.0.0 (2026-10-03, 130/130) and pi 1.0.4 (2026-10-06, 130/130); a pi outside
-that set may load the plugin and silently degrade.
+pi 1.0.0 (2026-10-03, 130/130), pi 1.0.4 (2026-10-06, 130/130) and pi 1.4.0
+(2026-10-22, 130/130); a pi outside that set may load the plugin and silently
+degrade.
 
 The 0.99.1 pass caught exactly one such drift, worth knowing about as a pattern:
 the error-body tests had **pinned** the 0.87.1 adapter behaviour ("a body without
