@@ -476,12 +476,14 @@ loader aliases the bare `@earendil-works/pi-ai` specifier to its own copy, so a
 plain `npm install` leaves nothing to typecheck against. `scripts/link-pi.mjs`
 links them from your global pi install — it probes the npm prefix, nvm, pnpm,
 `~/.local`, `/usr/local` and the directory the `pi` executable resolves to, and
-creates junctions on Windows. For a specific install:
+creates junctions on Windows. Since pi 1.5.0 it also links the host's bundled
+`typebox`, because pi-ai no longer re-exports TypeBox. For a specific install:
 `PI_ROOT=/path/to/node_modules node scripts/link-pi.mjs`. Verified against
 pi 0.87.1 / pi-ai 0.87.1 / `@types/node` 22.19.19 (2026-09-26), pi 0.99.1 /
 pi-ai 0.99.1 (2026-09-30), pi 1.0.0 / pi-ai 1.0.0 (2026-10-03), pi 1.0.4 /
-pi-ai 1.0.4 (2026-10-06), and pi 1.4.0 / pi-ai 1.4.0 (2026-10-22) — the suite is
-green on all five, and loading was checked on 1.0.0, 1.0.4 and 1.4.0 separately:
+pi-ai 1.0.4 (2026-10-06), pi 1.4.0 / pi-ai 1.4.0 (2026-10-22) and pi 1.5.0 /
+pi-ai 1.5.0 (2026-11-03) — the suite is green on all six, and loading was checked
+on 1.0.0, 1.0.4, 1.4.0 and 1.5.0 separately:
 `pi -ne -e <repo> --offline --list-models fuelix` prints the same 98 models.
 
 `npm run typecheck` shells out to a bare `tsc`, and this repo deliberately carries
@@ -501,9 +503,23 @@ Behaviour depends on pi internals (the `message_end` rewrite contract,
 `"*"` — pi's own packaging guidance is to declare host-provided packages with a
 `"*"` range, so the supported versions are stated here rather than narrowed in the
 manifest. Tested on pi 0.87.1 (2026-09-26-29), pi 0.99.1 (2026-09-30, 130/130),
-pi 1.0.0 (2026-10-03, 130/130), pi 1.0.4 (2026-10-06, 130/130) and pi 1.4.0
-(2026-10-22, 130/130); a pi outside that set may load the plugin and silently
-degrade.
+pi 1.0.0 (2026-10-03, 130/130), pi 1.0.4 (2026-10-06, 130/130), pi 1.4.0
+(2026-10-22, 130/130) and pi 1.5.0 (2026-11-03, 130/130); a pi outside that set may
+load the plugin and silently degrade.
+
+**pi 1.5.0 (2026-11-03).** The host migration is the whole of this release. The one
+real 1.5.0 break — pi-ai no longer re-exporting TypeBox, which `tsc` cannot see pi's
+runtime compat mapping for — was fixed by importing `Type` from the host's bundled
+`typebox` in `test/wire-format.test.ts` and `live/check.ts`; `scripts/link-pi.mjs`
+links it. `npm run check` is green (130/130) and `--offline --list-models fuelix`
+still prints 98 models. The package changelog (`CHANGELOG.md`, read by pi 1.5.0 from
+the package root) ships for the first time. Not adopted from 1.5.0: the pi-schema
+tool-validation change and its coercion rules (this package registers no tools),
+`keyText()`/`keyHint()` and `blocked` on `ctx.ui.custom()` (no custom tool renderer
+or inline custom UI), `pi.exec()` `maxBuffer`/`truncated` (never called),
+`Usage.cost.totalFromProvider` and `responseModel` (filled by the host runtime), the
+new host catalogs (GPT-6.1 Terra, models.dev v2), and MCP OAuth client registration
+(not MCP).
 
 The 0.99.1 pass caught exactly one such drift, worth knowing about as a pattern:
 the error-body tests had **pinned** the 0.87.1 adapter behaviour ("a body without

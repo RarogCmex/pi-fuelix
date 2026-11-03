@@ -15,7 +15,12 @@ import assert from "node:assert/strict";
 import test, { describe, afterEach } from "node:test";
 import { openAICompletionsApi } from "@earendil-works/pi-ai/api/openai-completions.lazy";
 import type { Context, Model, ThinkingLevel, Tool, TranscriptContext } from "@earendil-works/pi-ai";
-import { normalizeContext, Type } from "@earendil-works/pi-ai";
+import { normalizeContext } from "@earendil-works/pi-ai";
+// pi 1.5.0: pi-ai no longer re-exports TypeBox. Pi maps the old import to the
+// compat entry plus its bundled TypeBox at runtime, but `tsc` sees neither, so
+// the builder comes from `typebox` directly — the form the 1.5.0 docs prescribe
+// for new code.
+import { Type } from "typebox";
 import { CATALOG, UNVERIFIED_FLOOR } from "../catalog.ts";
 import { withBodyRecoveryApi } from "../errors.ts";
 import { CHAT_COMPAT, DEFAULT_BASE_URL, entryToModel, MAX_TOKENS_FIELD } from "../models.ts";

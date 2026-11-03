@@ -36,12 +36,16 @@ import {
   isContextOverflow,
   isRetryableAssistantError,
   normalizeContext,
-  Type,
   type AssistantMessage,
   type Model,
   type Tool,
   type Usage,
 } from "@earendil-works/pi-ai";
+// pi 1.5.0: pi-ai no longer re-exports TypeBox. Pi maps the old import to the
+// compat entry plus its bundled TypeBox at runtime, but `tsc` sees neither, so
+// the builder comes from `typebox` directly — the form the 1.5.0 docs prescribe
+// for new code.
+import { Type } from "typebox";
 import { CATALOG_BY_ID, LISTED_CHAT_IDS, NON_CHAT_IDS } from "../catalog.ts";
 import {
   clarifyFuelixError,
